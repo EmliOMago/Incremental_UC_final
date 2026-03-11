@@ -653,8 +653,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 524292604}
   m_HandleRect: {fileID: 524292603}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.9999998
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1879,10 +1879,10 @@ MonoBehaviour:
   prefabMelhoria: {fileID: 426784102626521257, guid: 67998ce1d304a4e4baaaa45c1a863a04, type: 3}
   nomeTabelaLocalizacao: HUD_Upgrades
   melhoriasManuais: []
-  tabelaLocalizacaoCsv: {fileID: 0}
+  tabelaLocalizacaoCsv: {fileID: 4900000, guid: 7a630e61c1b0de04f85724985ad3d3ef, type: 3}
   valorBaseDrinkManual: 1
-  valorBaseDrinkPassivoPorCompra: 1
-  multiplicadorDesbloqueio: 10
+  valorBaseDrinkPassivoPorCompra: 0.01
+  multiplicadorDesbloqueio: 100
   valorInicialReferenciaDesbloqueio: 1
 --- !u!114 &1036326116
 MonoBehaviour:
@@ -2698,7 +2698,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1464768270}
   m_HandleRect: {fileID: 1464768269}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3369,8 +3369,8 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1036326113}
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 117614905}
   - {fileID: 1984571637}
+  - {fileID: 1036326113}

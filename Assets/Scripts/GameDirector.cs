@@ -9,7 +9,7 @@ public class GameDirector : MonoBehaviour
     public LevelManenger levelManenger;
     public HUDManeger hudManeger;
     public SaveManagerPlayerPrefs saveManager;
-
+    
     private void Awake()
     {
         if (instancia != null && instancia != this)

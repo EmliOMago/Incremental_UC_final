@@ -4,6 +4,8 @@ using UnityEngine;
 public class LevelManenger : MonoBehaviour
 {
     public float dinheiro = 0;
+    public float qntGanhosPassivos;
+    public float qntMultiplicadores;
 
     [Header("Ganho passivo")]
     [Tooltip("Tempo entre cada pagamento do ganho passivo, em segundos")]
