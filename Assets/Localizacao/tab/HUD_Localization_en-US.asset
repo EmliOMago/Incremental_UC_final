@@ -18,143 +18,143 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 27022061568
+  - m_Id: 233317988208640
     m_Localized: Turbo Straw
     m_Metadata:
       m_Items: []
-  - m_Id: 30910181376
+  - m_Id: 233336124379136
     m_Localized: Increases profit per manual drink by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 33657450496
+  - m_Id: 233336891936768
     m_Localized: Manual drink earns {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 36480217088
+  - m_Id: 233337642717184
     m_Localized: Drink Machine
     m_Metadata:
       m_Items: []
-  - m_Id: 56109559808
+  - m_Id: 233338385108992
     m_Localized: Multiplies automatic drink profit by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 59901210624
+  - m_Id: 233339106529280
     m_Localized: Auto drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 62149357568
+  - m_Id: 233339874086912
     m_Localized: House Recipe
     m_Metadata:
       m_Items: []
-  - m_Id: 62916915200
+  - m_Id: 233340624867328
     m_Localized: Multiplies drinks sold per click by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 63659307008
+  - m_Id: 233341392424960
     m_Localized: Manual drink earns {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 64561082368
+  - m_Id: 233342159982592
     m_Localized: Cold Delivery
     m_Metadata:
       m_Items: []
-  - m_Id: 65269919744
+  - m_Id: 233342923345920
     m_Localized: Multiplies automatic drinks by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 66071031808
+  - m_Id: 233343686709248
     m_Localized: Auto drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 66880532480
+  - m_Id: 233344441683968
     m_Localized: VIP Menu
     m_Metadata:
       m_Items: []
-  - m_Id: 67690033152
+  - m_Id: 233345146327040
     m_Localized: Boosts each manual drink by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 68495339520
+  - m_Id: 233345909690368
     m_Localized: Manual drink earns {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 69296451584
+  - m_Id: 233346626916352
     m_Localized: Auto Franchise
     m_Metadata:
       m_Items: []
-  - m_Id: 70131118080
+  - m_Id: 233347440611328
     m_Localized: Expands automatic drink income by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 70936424448
+  - m_Id: 233348153643008
     m_Localized: Auto drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 71712370688
+  - m_Id: 233348866674688
     m_Localized: Mojito
     m_Metadata:
       m_Items: []
-  - m_Id: 72517677056
+  - m_Id: 233349600677888
     m_Localized: Multiplies profit from rum-and-mint drinks by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 73385897984
+  - m_Id: 233350351458304
     m_Localized: rum-and-mint drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 74941984768
+  - m_Id: 233351077072896
     m_Localized: Margarita
     m_Metadata:
       m_Items: []
-  - m_Id: 75868925952
+  - m_Id: 233351811076096
     m_Localized: Multiplies profit from tequila-and-citrus drinks by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 76745535488
+  - m_Id: 233352570245120
     m_Localized: tequila-and-citrus drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 77584396288
+  - m_Id: 233353329414144
     m_Localized: Martini
     m_Metadata:
       m_Items: []
-  - m_Id: 78456811520
+  - m_Id: 233354076000256
     m_Localized: Multiplies profit from dry gin drinks by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 79295672320
+  - m_Id: 233354864529408
     m_Localized: dry gin drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 80134533120
+  - m_Id: 233355640475648
     m_Localized: Old Fashioned
     m_Metadata:
       m_Items: []
-  - m_Id: 80973393920
+  - m_Id: 233356399644672
     m_Localized: Multiplies profit from classic whiskey drinks by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 81774505984
+  - m_Id: 233357200756736
     m_Localized: classic whiskey drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 82617561088
+  - m_Id: 233357964120064
     m_Localized: Negroni
     m_Metadata:
       m_Items: []
-  - m_Id: 83389313024
+  - m_Id: 233358723289088
     m_Localized: Multiplies profit from bitter herbal drinks by {0}.
     m_Metadata:
       m_Items: []
-  - m_Id: 84228173824
+  - m_Id: 233359461486592
     m_Localized: bitter herbal drinks earn {0}
     m_Metadata:
       m_Items: []
-  - m_Id: 85100589056
+  - m_Id: 233360254210048
     m_Localized: Daiquiri
     m_Metadata:
       m_Items: []
-  - m_Id: 85977198592
+  - m_Id: 233360916910080
     m_Localized: Multiplies profit from rum-and-lime drinks by {0}.
     m_Metadata:
       m_Items: []

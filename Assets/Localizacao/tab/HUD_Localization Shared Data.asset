@@ -15,161 +15,143 @@ MonoBehaviour:
   m_TableCollectionName: HUD_Localization
   m_TableCollectionNameGuidString: 51c64859a0afeac43baa7cab8bb0c6fd
   m_Entries:
-  - m_Id: 27022061568
+  - m_Id: 233317988208640
     m_Key: upgrade.0.title
     m_Metadata:
-      m_Items:
-      - rid: 3848726355733905645
-  - m_Id: 30910181376
+      m_Items: []
+  - m_Id: 233336124379136
     m_Key: upgrade.0.description
     m_Metadata:
-      m_Items:
-      - rid: 3848726355733905646
-  - m_Id: 33657450496
+      m_Items: []
+  - m_Id: 233336891936768
     m_Key: upgrade.0.value
     m_Metadata:
-      m_Items:
-      - rid: 3848726355733905647
-  - m_Id: 36480217088
+      m_Items: []
+  - m_Id: 233337642717184
     m_Key: upgrade.1.title
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694158
-  - m_Id: 56109559808
+      m_Items: []
+  - m_Id: 233338385108992
     m_Key: upgrade.1.description
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694159
-  - m_Id: 59901210624
+      m_Items: []
+  - m_Id: 233339106529280
     m_Key: upgrade.1.value
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694160
-  - m_Id: 62149357568
+      m_Items: []
+  - m_Id: 233339874086912
     m_Key: upgrade.2.title
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694161
-  - m_Id: 62916915200
+      m_Items: []
+  - m_Id: 233340624867328
     m_Key: upgrade.2.description
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694162
-  - m_Id: 63659307008
+      m_Items: []
+  - m_Id: 233341392424960
     m_Key: upgrade.2.value
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694163
-  - m_Id: 64561082368
+      m_Items: []
+  - m_Id: 233342159982592
     m_Key: upgrade.3.title
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694164
-  - m_Id: 65269919744
+      m_Items: []
+  - m_Id: 233342923345920
     m_Key: upgrade.3.description
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694165
-  - m_Id: 66071031808
+      m_Items: []
+  - m_Id: 233343686709248
     m_Key: upgrade.3.value
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694166
-  - m_Id: 66880532480
+      m_Items: []
+  - m_Id: 233344441683968
     m_Key: upgrade.4.title
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694167
-  - m_Id: 67690033152
+      m_Items: []
+  - m_Id: 233345146327040
     m_Key: upgrade.4.description
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694168
-  - m_Id: 68495339520
+      m_Items: []
+  - m_Id: 233345909690368
     m_Key: upgrade.4.value
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694169
-  - m_Id: 69296451584
+      m_Items: []
+  - m_Id: 233346626916352
     m_Key: upgrade.5.title
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694170
-  - m_Id: 70131118080
+      m_Items: []
+  - m_Id: 233347440611328
     m_Key: upgrade.5.description
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694171
-  - m_Id: 70936424448
+      m_Items: []
+  - m_Id: 233348153643008
     m_Key: upgrade.5.value
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694172
-  - m_Id: 71712370688
+      m_Items: []
+  - m_Id: 233348866674688
     m_Key: upgrade.6.title
     m_Metadata:
       m_Items: []
-  - m_Id: 72517677056
+  - m_Id: 233349600677888
     m_Key: upgrade.6.description
     m_Metadata:
       m_Items: []
-  - m_Id: 73385897984
+  - m_Id: 233350351458304
     m_Key: upgrade.6.value
     m_Metadata:
       m_Items: []
-  - m_Id: 74941984768
+  - m_Id: 233351077072896
     m_Key: upgrade.7.title
     m_Metadata:
       m_Items: []
-  - m_Id: 75868925952
+  - m_Id: 233351811076096
     m_Key: upgrade.7.description
     m_Metadata:
       m_Items: []
-  - m_Id: 76745535488
+  - m_Id: 233352570245120
     m_Key: upgrade.7.value
     m_Metadata:
       m_Items: []
-  - m_Id: 77584396288
+  - m_Id: 233353329414144
     m_Key: upgrade.8.title
     m_Metadata:
       m_Items: []
-  - m_Id: 78456811520
+  - m_Id: 233354076000256
     m_Key: upgrade.8.description
     m_Metadata:
       m_Items: []
-  - m_Id: 79295672320
+  - m_Id: 233354864529408
     m_Key: upgrade.8.value
     m_Metadata:
       m_Items: []
-  - m_Id: 80134533120
+  - m_Id: 233355640475648
     m_Key: upgrade.9.title
     m_Metadata:
       m_Items: []
-  - m_Id: 80973393920
+  - m_Id: 233356399644672
     m_Key: upgrade.9.description
     m_Metadata:
       m_Items: []
-  - m_Id: 81774505984
+  - m_Id: 233357200756736
     m_Key: upgrade.9.value
     m_Metadata:
       m_Items: []
-  - m_Id: 82617561088
+  - m_Id: 233357964120064
     m_Key: upgrade.10.title
     m_Metadata:
       m_Items: []
-  - m_Id: 83389313024
+  - m_Id: 233358723289088
     m_Key: upgrade.10.description
     m_Metadata:
       m_Items: []
-  - m_Id: 84228173824
+  - m_Id: 233359461486592
     m_Key: upgrade.10.value
     m_Metadata:
       m_Items: []
-  - m_Id: 85100589056
+  - m_Id: 233360254210048
     m_Key: upgrade.11.title
     m_Metadata:
       m_Items: []
-  - m_Id: 85977198592
+  - m_Id: 233360916910080
     m_Key: upgrade.11.description
     m_Metadata:
       m_Items: []
@@ -348,8 +330,7 @@ MonoBehaviour:
   - m_Id: 183334582087680
     m_Key: upgrade.acquire
     m_Metadata:
-      m_Items:
-      - rid: 3848726365259694173
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
@@ -361,79 +342,3 @@ MonoBehaviour:
       type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
       data:
         m_CustomEpoch: 1773198376455
-    - rid: 3848726355733905645
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "T\xEDtulo da melhoria 0."
-    - rid: 3848726355733905646
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Descri\xE7\xE3o da melhoria 0. Usa {0}."
-    - rid: 3848726355733905647
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: Valor da melhoria 0. Usa {0}.
-    - rid: 3848726365259694158
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "T\xEDtulo da melhoria 1."
-    - rid: 3848726365259694159
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Descri\xE7\xE3o da melhoria 1. Usa {0}."
-    - rid: 3848726365259694160
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: Valor da melhoria 1. Usa {0}.
-    - rid: 3848726365259694161
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "T\xEDtulo da melhoria 2."
-    - rid: 3848726365259694162
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Descri\xE7\xE3o da melhoria 2. Usa {0}."
-    - rid: 3848726365259694163
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: Valor da melhoria 2. Usa {0}.
-    - rid: 3848726365259694164
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "T\xEDtulo da melhoria 3."
-    - rid: 3848726365259694165
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Descri\xE7\xE3o da melhoria 3. Usa {0}."
-    - rid: 3848726365259694166
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: Valor da melhoria 3. Usa {0}.
-    - rid: 3848726365259694167
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "T\xEDtulo da melhoria 4."
-    - rid: 3848726365259694168
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Descri\xE7\xE3o da melhoria 4. Usa {0}."
-    - rid: 3848726365259694169
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: Valor da melhoria 4. Usa {0}.
-    - rid: 3848726365259694170
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "T\xEDtulo da melhoria 5."
-    - rid: 3848726365259694171
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Descri\xE7\xE3o da melhoria 5. Usa {0}."
-    - rid: 3848726365259694172
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: Valor da melhoria 5. Usa {0}.
-    - rid: 3848726365259694173
-      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
-      data:
-        m_CommentText: "Texto do bot\xE3o de compra das melhorias."
