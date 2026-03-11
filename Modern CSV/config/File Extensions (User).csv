@@ -1,0 +1,15 @@
+"For a given file extension,",--- Delimiter ---,--- Line Ending ---,--- Encoding ---,--- Parsing Standard ---
+"set your preferred delimiter,",Limited to one ASCII character.,Affects file save only.,"To see supported encodings, call the",The current options include 
+"character encoding, and","No delimiter: Type ""(none)"".","Windows (CR LF): ""Windows""","""List Character Encodings"" command","""RFC 4180"", ""Delimiter Only"", "
+parsing standard. You may add,"Auto-detect: Type ""(auto)"".","Mac/Linux (LF): ""Unix""",and select one to copy to the clipboard.,"""All Quotes"", and ""Sparse Quotes""."
+your own extensions.,"Tab: Type ""\t"" or ""tab"".","Current Platform: ""(platform)""",Default encoding: UTF-8,Default standard: RFC 4180.
+"No extension: Type ""(none)"".","Space: Type ""\s"" or ""space"".",Default ending: current platform,,
+,Default delimiter: auto-detect,,,
+,"if enabled. Otherwise, comma.",,,
+,,,,
+Extension,Delimiter,Line Ending,Encoding,Parsing Standard
+csv,(auto),Windows,UTF-8,RFC 4180
+tsv,\t,Windows,UTF-8,RFC 4180
+tab,\t,Windows,UTF-8,RFC 4180
+dsv,;,Windows,UTF-8,RFC 4180
+psv,|,Windows,UTF-8,RFC 4180

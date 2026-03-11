@@ -27,22 +27,15 @@ public class GameDirector : MonoBehaviour
     private void OnDestroy()
     {
         if (instancia == this)
-        {
             SceneManager.sceneLoaded -= AoCarregarCena;
-        }
     }
 
     private void AoCarregarCena(Scene cena, LoadSceneMode modo)
     {
         AtualizarReferenciasDaCena();
 
-        if (cena.name == "CenaJogo")
-        {
-            if (levelManenger != null)
-            {
-                levelManenger.InicializarCenaJogo();
-            }
-        }
+        if (cena.name == "CenaJogo" && levelManenger != null)
+            levelManenger.InicializarCenaJogo();
     }
 
     public void AtualizarReferenciasDaCena()

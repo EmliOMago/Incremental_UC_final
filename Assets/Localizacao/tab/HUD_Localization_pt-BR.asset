@@ -1,0 +1,337 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: HUD_Localization_pt-BR
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: pt-BR
+  m_SharedData: {fileID: 11400000, guid: 51c64859a0afeac43baa7cab8bb0c6fd, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 27022061568
+    m_Localized: Canudo Turbo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30910181376
+    m_Localized: Aumenta o lucro por drink manual em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33657450496
+    m_Localized: Drink manual rende {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36480217088
+    m_Localized: "M\xE1quina de Drinks"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56109559808
+    m_Localized: "Multiplica o lucro autom\xE1tico de drinks em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59901210624
+    m_Localized: Auto drinks rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62149357568
+    m_Localized: Receita da Casa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62916915200
+    m_Localized: Multiplica os drinks vendidos no clique em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63659307008
+    m_Localized: Drink manual rende {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64561082368
+    m_Localized: Entrega Gelada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65269919744
+    m_Localized: "Multiplica os drinks autom\xE1ticos em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66071031808
+    m_Localized: Auto drinks rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66880532480
+    m_Localized: "Card\xE1pio VIP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67690033152
+    m_Localized: Valoriza cada drink manual em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68495339520
+    m_Localized: Drink manual rende {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69296451584
+    m_Localized: "Franquia Autom\xE1tica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70131118080
+    m_Localized: "Expande a renda autom\xE1tica de drinks em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70936424448
+    m_Localized: Auto drinks rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71712370688
+    m_Localized: Mojito
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72517677056
+    m_Localized: "Multiplica os ganhos de drinks com rum e hortel\xE3 em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73385897984
+    m_Localized: "drinks com rum e hortel\xE3 rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74941984768
+    m_Localized: Margarita
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75868925952
+    m_Localized: "Multiplica os ganhos de drinks com tequila e c\xEDtricos em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76745535488
+    m_Localized: "drinks com tequila e c\xEDtricos rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77584396288
+    m_Localized: Martini
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78456811520
+    m_Localized: Multiplica os ganhos de drinks secos com gin em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79295672320
+    m_Localized: drinks secos com gin rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80134533120
+    m_Localized: Old Fashioned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80973393920
+    m_Localized: "Multiplica os ganhos de drinks cl\xE1ssicos com whiskey em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 81774505984
+    m_Localized: "drinks cl\xE1ssicos com whiskey rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82617561088
+    m_Localized: Negroni
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83389313024
+    m_Localized: Multiplica os ganhos de drinks amargos e herbais em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84228173824
+    m_Localized: drinks amargos e herbais rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85100589056
+    m_Localized: Daiquiri
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85977198592
+    m_Localized: "Multiplica os ganhos de drinks de rum e lim\xE3o em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86849613824
+    m_Localized: "drinks de rum e lim\xE3o rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87684280320
+    m_Localized: Caipirinha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88518946816
+    m_Localized: "Multiplica os ganhos de drinks de cacha\xE7a e lim\xE3o em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89395556352
+    m_Localized: "drinks de cacha\xE7a e lim\xE3o rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 90267971584
+    m_Localized: "Pi\xF1a Colada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 91111026688
+    m_Localized: Multiplica os ganhos de drinks tropicais e cremosos em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92016996352
+    m_Localized: drinks tropicais e cremosos rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92851662848
+    m_Localized: Cosmopolitan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93694717952
+    m_Localized: "Multiplica os ganhos de drinks de vodka, frutas vermelhas e c\xEDtricos
+      em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94495830016
+    m_Localized: "drinks de vodka, frutas vermelhas e c\xEDtricos rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95372439552
+    m_Localized: Bloody Mary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96211300352
+    m_Localized: Multiplica os ganhos de drinks apimentados de brunch em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97075326976
+    m_Localized: drinks apimentados de brunch rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97918382080
+    m_Localized: Moscow Mule
+    m_Metadata:
+      m_Items: []
+  - m_Id: 98761437184
+    m_Localized: Multiplica os ganhos de drinks com gengibre em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 99596103680
+    m_Localized: drinks com gengibre rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 100430770176
+    m_Localized: Mai Tai
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101269630976
+    m_Localized: Multiplica os ganhos de drinks tiki com rum em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102179794944
+    m_Localized: drinks tiki com rum rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103022850048
+    m_Localized: Bellini
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103853322240
+    m_Localized: Multiplica os ganhos de drinks espumantes com frutas em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104725737472
+    m_Localized: drinks espumantes com frutas rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 105606541312
+    m_Localized: Mimosa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106445402112
+    m_Localized: Multiplica os ganhos de drinks leves com espumante e suco em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107313623040
+    m_Localized: drinks leves com espumante e suco rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 108118929408
+    m_Localized: Manhattan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109058453504
+    m_Localized: Multiplica os ganhos de drinks encorpados com whiskey e vermute
+      em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109897314304
+    m_Localized: drinks encorpados com whiskey e vermute rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 110773923840
+    m_Localized: Whiskey Sour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 111642144768
+    m_Localized: Multiplica os ganhos de drinks sour com whiskey em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112552308736
+    m_Localized: drinks sour com whiskey rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113416335360
+    m_Localized: Paloma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114322305024
+    m_Localized: Multiplica os ganhos de drinks de tequila e grapefruit em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115270217728
+    m_Localized: drinks de tequila e grapefruit rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 116205547520
+    m_Localized: French 75
+    m_Metadata:
+      m_Items: []
+  - m_Id: 117149265920
+    m_Localized: Multiplica os ganhos de drinks espumantes com gin em {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 118080401408
+    m_Localized: drinks espumantes com gin rendem {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119053479936
+    m_Localized: Sangria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119967838208
+    m_Localized: "Multiplica os ganhos de drinks \xE0 base de vinho e frutas em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 121607811072
+    m_Localized: "drinks \xE0 base de vinho e frutas rendem {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122853519360
+    m_Localized: Irish Coffee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 124824842240
+    m_Localized: "Multiplica os ganhos de drinks quentes com caf\xE9 em {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126703890432
+    m_Localized: "drinks quentes com caf\xE9 rendem {0}"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -4,33 +4,21 @@ using UnityEngine;
 public class LevelManenger : MonoBehaviour
 {
     public float dinheiro = 0;
-    [Space]
-    [Header("Quantidade")]
-    [Tooltip("Quantidades adiquiridos de multiplicação")] public int qntMultiplicadores;
-    [Tooltip("Quantidades adiquiridos de ganhos passivos")] public int qntGanhosPassivos;
-    [Space]
-    [Header("Valores")]
-    [Tooltip("Multiplicação a cada click")] public float valorMultiplicador;
-    [Tooltip("Quantidade ganha por ciclo do ganho passivo")] public float valorGanhosPassivos;
-    [Space]
-    [Header("Preços")]
-    [Tooltip("Preço base do multiplicador")] public float precoBaseMultiplicador;
-    [Tooltip("Multiplicador de progressão do preço do multiplicador")] public float multiplicadorMultiplicador;
-    [Space]
-    [Tooltip("Preço base do ganho passivo")] public float precoBaseGanhoPassivo;
-    [Tooltip("Multiplicador de progressão do preço do ganho passivo")] public float multiplicadorGanhoPassivo;
-    [Space]
+
     [Header("Ganho passivo")]
-    [Tooltip("Tempo entre cada pagamento do ganho passivo, em segundos")] public float intervaloGanhoPassivo = 1f;
+    [Tooltip("Tempo entre cada pagamento do ganho passivo, em segundos")]
+    public float intervaloGanhoPassivo = 1f;
 
     public static event System.Action OnDinheiroMudar;
 
     private Coroutine rotinaGanhoPassivo;
     private Coroutine rotinaAutoSave;
+    private bool jogoInicializado;
 
     private void OnEnable()
     {
-        IniciarRotinas();
+        if (jogoInicializado)
+            IniciarRotinas();
     }
 
     private void OnDisable()
@@ -41,22 +29,22 @@ public class LevelManenger : MonoBehaviour
     public void InicializarCenaJogo()
     {
         if (GameDirector.instancia != null)
-        {
             GameDirector.instancia.AtualizarReferenciasDaCena();
-        }
-
-        CarregarJogo();
-        IniciarRotinas();
 
         if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
-        {
-            GameDirector.instancia.hudManeger.AtualizarTudo();
-        }
+            GameDirector.instancia.hudManeger.IniciarFluxoDeCarregamentoInicial();
+    }
+
+    public void ConcluirInicializacaoCenaJogo()
+    {
+        jogoInicializado = true;
+        IniciarRotinas();
+        OnDinheiroMudar?.Invoke();
     }
 
     private void IniciarRotinas()
     {
-        if (!isActiveAndEnabled)
+        if (!isActiveAndEnabled || !jogoInicializado)
             return;
 
         if (rotinaGanhoPassivo == null)
@@ -84,62 +72,19 @@ public class LevelManenger : MonoBehaviour
     public void AddDinheiro(float valor)
     {
         dinheiro += valor;
-        Debug.Log(dinheiro);
+        if (dinheiro < 0f)
+            dinheiro = 0f;
+
         OnDinheiroMudar?.Invoke();
     }
 
     public void ClickDrink()
     {
         float valor = 1f;
-        float multiplicador = 1f + (valorMultiplicador * qntMultiplicadores);
-        valor *= multiplicador;
+        if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
+            valor = GameDirector.instancia.hudManeger.ObterValorCliqueFinal();
 
         AddDinheiro(valor);
-        GameDirector.instancia?.hudManeger?.AtualizarMutiplicador();
-    }
-
-    public void ComprarMultiplicador()
-    {
-        float preco = ObtemPrecoMultiplicador();
-
-        if (dinheiro < preco)
-        {
-            Debug.Log("Dinheiro insuficiente para comprar multiplicador.");
-            return;
-        }
-
-        AddDinheiro(-preco);
-        qntMultiplicadores += 1;
-
-        GameDirector.instancia?.hudManeger?.AtualizarMutiplicador();
-    }
-
-    public void ComprarGanhosPassivos()
-    {
-        float preco = ObtemPrecoGanhoPassivo();
-
-        if (dinheiro < preco)
-        {
-            Debug.Log("Dinheiro insuficiente para comprar ganho passivo.");
-            return;
-        }
-
-        AddDinheiro(-preco);
-        qntGanhosPassivos += 1;
-
-        GameDirector.instancia?.hudManeger?.AtualizarGanhoPassivo();
-    }
-
-    public float ObtemPrecoMultiplicador()
-    {
-        float preco = precoBaseMultiplicador * Mathf.Pow(multiplicadorMultiplicador, qntMultiplicadores);
-        return Mathf.Max(precoBaseMultiplicador, preco);
-    }
-
-    public float ObtemPrecoGanhoPassivo()
-    {
-        float preco = precoBaseGanhoPassivo * Mathf.Pow(multiplicadorGanhoPassivo, qntGanhosPassivos);
-        return Mathf.Max(precoBaseGanhoPassivo, preco);
     }
 
     private IEnumerator RotinaGanhoPassivo()
@@ -149,12 +94,14 @@ public class LevelManenger : MonoBehaviour
             float espera = intervaloGanhoPassivo > 0f ? intervaloGanhoPassivo : 1f;
             yield return new WaitForSeconds(espera);
 
-            if (qntGanhosPassivos <= 0 || valorGanhosPassivos <= 0f)
+            float ganho = 0f;
+            if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
+                ganho = GameDirector.instancia.hudManeger.ObterValorPassivoFinalPorCiclo();
+
+            if (ganho <= 0f)
                 continue;
 
-            float ganho = valorGanhosPassivos * qntGanhosPassivos;
             AddDinheiro(ganho);
-            GameDirector.instancia?.hudManeger?.AtualizarGanhoPassivo();
         }
     }
 
@@ -165,10 +112,5 @@ public class LevelManenger : MonoBehaviour
             yield return new WaitForSeconds(5f);
             GameDirector.instancia?.saveManager?.Salvar();
         }
-    }
-
-    public void CarregarJogo()
-    {
-        GameDirector.instancia?.saveManager?.Carregar();
     }
 }

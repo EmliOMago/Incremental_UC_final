@@ -10,7 +10,8 @@ EditorBuildSettings:
     guid: 6050321626abf8a4188e714a2e90ede6
   - enabled: 1
     path: Assets/Scenes/CenaJogo.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    guid: 76889c990bd632447978a7448e5d2cc4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    com.unity.localization.settings: {fileID: 11400000, guid: a7fee054f4b5f984a995902a23dedb0e, type: 2}
   m_UseUCBPForAssetBundles: 0

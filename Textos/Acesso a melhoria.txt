@@ -1,0 +1,2 @@
+ObterTotalComprasMelhorias()
+ObterQuantidadeCompradaMelhoria(int indiceTabela)

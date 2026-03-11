@@ -1,0 +1,355 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: HUD_Localization Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: HUD_Localization
+  m_TableCollectionNameGuidString: 51c64859a0afeac43baa7cab8bb0c6fd
+  m_Entries:
+  - m_Id: 27022061568
+    m_Key: upgrade.0.title
+    m_Metadata:
+      m_Items:
+      - rid: 3848726355733905645
+  - m_Id: 30910181376
+    m_Key: upgrade.0.description
+    m_Metadata:
+      m_Items:
+      - rid: 3848726355733905646
+  - m_Id: 33657450496
+    m_Key: upgrade.0.value
+    m_Metadata:
+      m_Items:
+      - rid: 3848726355733905647
+  - m_Id: 36480217088
+    m_Key: upgrade.1.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56109559808
+    m_Key: upgrade.1.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59901210624
+    m_Key: upgrade.1.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62149357568
+    m_Key: upgrade.2.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62916915200
+    m_Key: upgrade.2.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63659307008
+    m_Key: upgrade.2.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64561082368
+    m_Key: upgrade.3.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65269919744
+    m_Key: upgrade.3.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66071031808
+    m_Key: upgrade.3.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66880532480
+    m_Key: upgrade.4.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67690033152
+    m_Key: upgrade.4.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68495339520
+    m_Key: upgrade.4.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69296451584
+    m_Key: upgrade.5.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70131118080
+    m_Key: upgrade.5.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70936424448
+    m_Key: upgrade.5.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71712370688
+    m_Key: upgrade.6.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72517677056
+    m_Key: upgrade.6.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73385897984
+    m_Key: upgrade.6.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74941984768
+    m_Key: upgrade.7.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75868925952
+    m_Key: upgrade.7.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76745535488
+    m_Key: upgrade.7.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77584396288
+    m_Key: upgrade.8.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78456811520
+    m_Key: upgrade.8.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79295672320
+    m_Key: upgrade.8.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80134533120
+    m_Key: upgrade.9.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80973393920
+    m_Key: upgrade.9.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 81774505984
+    m_Key: upgrade.9.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82617561088
+    m_Key: upgrade.10.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83389313024
+    m_Key: upgrade.10.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84228173824
+    m_Key: upgrade.10.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85100589056
+    m_Key: upgrade.11.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85977198592
+    m_Key: upgrade.11.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86849613824
+    m_Key: upgrade.11.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87684280320
+    m_Key: upgrade.12.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88518946816
+    m_Key: upgrade.12.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89395556352
+    m_Key: upgrade.12.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 90267971584
+    m_Key: upgrade.13.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 91111026688
+    m_Key: upgrade.13.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92016996352
+    m_Key: upgrade.13.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92851662848
+    m_Key: upgrade.14.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93694717952
+    m_Key: upgrade.14.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94495830016
+    m_Key: upgrade.14.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95372439552
+    m_Key: upgrade.15.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96211300352
+    m_Key: upgrade.15.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97075326976
+    m_Key: upgrade.15.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97918382080
+    m_Key: upgrade.16.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 98761437184
+    m_Key: upgrade.16.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 99596103680
+    m_Key: upgrade.16.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 100430770176
+    m_Key: upgrade.17.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101269630976
+    m_Key: upgrade.17.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102179794944
+    m_Key: upgrade.17.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103022850048
+    m_Key: upgrade.18.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103853322240
+    m_Key: upgrade.18.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104725737472
+    m_Key: upgrade.18.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 105606541312
+    m_Key: upgrade.19.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106445402112
+    m_Key: upgrade.19.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107313623040
+    m_Key: upgrade.19.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 108118929408
+    m_Key: upgrade.20.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109058453504
+    m_Key: upgrade.20.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109897314304
+    m_Key: upgrade.20.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 110773923840
+    m_Key: upgrade.21.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 111642144768
+    m_Key: upgrade.21.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112552308736
+    m_Key: upgrade.21.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113416335360
+    m_Key: upgrade.22.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114322305024
+    m_Key: upgrade.22.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115270217728
+    m_Key: upgrade.22.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 116205547520
+    m_Key: upgrade.23.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 117149265920
+    m_Key: upgrade.23.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 118080401408
+    m_Key: upgrade.23.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119053479936
+    m_Key: upgrade.24.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119967838208
+    m_Key: upgrade.24.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 121607811072
+    m_Key: upgrade.24.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122853519360
+    m_Key: upgrade.25.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 124824842240
+    m_Key: upgrade.25.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126703890432
+    m_Key: upgrade.25.value
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3848726355733905644
+  references:
+    version: 2
+    RefIds:
+    - rid: 3848726355733905644
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1773198376455
+    - rid: 3848726355733905645
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "T\xEDtulo da melhoria 0."
+    - rid: 3848726355733905646
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: "Descri\xE7\xE3o da melhoria 0. Usa {0}."
+    - rid: 3848726355733905647
+      type: {class: Comment, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_CommentText: Valor da melhoria 0. Usa {0}.
