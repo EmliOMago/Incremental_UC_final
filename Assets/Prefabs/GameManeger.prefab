@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1280397516530804643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4207004519783676062}
+  - component: {fileID: 346503324459423925}
+  - component: {fileID: 2877133597132292712}
+  - component: {fileID: 3525744095377499083}
+  - component: {fileID: 6863902600156923982}
+  m_Layer: 0
+  m_Name: GameManeger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4207004519783676062
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280397516530804643}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 637.23706, y: 309.55087, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &346503324459423925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280397516530804643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad78755b8ff29c041871cccbbfa1639e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelManenger
+  dinheiro: 0
+  qntGanhosPassivos: 0
+  qntMultiplicadores: 0
+  intervaloGanhoPassivo: 1
+--- !u!114 &2877133597132292712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280397516530804643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2909eb338bb9e1346b2057c4aea65977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDirector
+  levelManenger: {fileID: 346503324459423925}
+  hudManeger: {fileID: 3525744095377499083}
+  saveManager: {fileID: 6863902600156923982}
+--- !u!114 &3525744095377499083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280397516530804643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17a0868b6c8f3a448b8e9c8697f0ee06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDManeger
+  dinheiroText: {fileID: 0}
+  contentMelhorias: {fileID: 0}
+  prefabMelhoria: {fileID: 426784102626521257, guid: 67998ce1d304a4e4baaaa45c1a863a04, type: 3}
+  nomeTabelaLocalizacao: HUD_Upgrades
+  melhoriasManuais: []
+  tabelaLocalizacaoCsv: {fileID: 4900000, guid: 7a630e61c1b0de04f85724985ad3d3ef, type: 3}
+  valorBaseDrinkManual: 1
+  valorBaseDrinkPassivoPorCompra: 0.01
+  multiplicadorDesbloqueio: 100
+  valorInicialReferenciaDesbloqueio: 1
+--- !u!114 &6863902600156923982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280397516530804643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 725f6ccd24699544b81819d2948d17b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManagerPlayerPrefs
