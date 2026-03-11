@@ -13,13 +13,7 @@ public class LevelManenger : MonoBehaviour
 
     private Coroutine rotinaGanhoPassivo;
     private Coroutine rotinaAutoSave;
-    private bool jogoInicializado;
-
-    private void OnEnable()
-    {
-        if (jogoInicializado)
-            IniciarRotinas();
-    }
+    private bool cenaInicializada;
 
     private void OnDisable()
     {
@@ -28,23 +22,34 @@ public class LevelManenger : MonoBehaviour
 
     public void InicializarCenaJogo()
     {
+        if (cenaInicializada)
+        {
+            OnDinheiroMudar?.Invoke();
+            GameDirector.instancia?.hudManeger?.AtualizarTudo();
+            return;
+        }
+
+        cenaInicializada = true;
+        PararRotinas();
+
         if (GameDirector.instancia != null)
             GameDirector.instancia.AtualizarReferenciasDaCena();
 
         if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
-            GameDirector.instancia.hudManeger.IniciarFluxoDeCarregamentoInicial();
-    }
+            GameDirector.instancia.hudManeger.ReinicializarHUDDaCena();
 
-    public void ConcluirInicializacaoCenaJogo()
-    {
-        jogoInicializado = true;
-        IniciarRotinas();
+        CarregarJogo();
         OnDinheiroMudar?.Invoke();
+
+        if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
+            GameDirector.instancia.hudManeger.AtualizarTudo();
+
+        IniciarRotinas();
     }
 
     private void IniciarRotinas()
     {
-        if (!isActiveAndEnabled || !jogoInicializado)
+        if (!isActiveAndEnabled)
             return;
 
         if (rotinaGanhoPassivo == null)
@@ -112,5 +117,10 @@ public class LevelManenger : MonoBehaviour
             yield return new WaitForSeconds(5f);
             GameDirector.instancia?.saveManager?.Salvar();
         }
+    }
+
+    public void CarregarJogo()
+    {
+        GameDirector.instancia?.saveManager?.CarregarOuCriar();
     }
 }

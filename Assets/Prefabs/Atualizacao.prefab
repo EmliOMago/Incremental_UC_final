@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7141300632238373980}
   - component: {fileID: 4518619269111239911}
   - component: {fileID: 7947414003968120484}
+  - component: {fileID: 6234069854162174347}
   m_Layer: 5
   m_Name: Atualizacao
   m_TagString: Untagged
@@ -39,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 274.9561, y: -161.85315}
-  m_SizeDelta: {x: 519.9122, y: 323.7061}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5163493379884456635
 CanvasRenderer:
@@ -117,8 +118,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
-  m_HorizontalFit: 0
-  m_VerticalFit: 0
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
+--- !u!114 &6234069854162174347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426784102626521257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd385b2ae43643f47ad97826006406fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  botaoComprar: {fileID: 184557512531994722}
+  textoBotaoComprar: {fileID: 5204503617844976324}
+  textoTitulo: {fileID: 3475395748325813350}
+  textoDescricao: {fileID: 5986662973462047873}
+  textoGanho: {fileID: 653871770650318506}
+  textoPreco: {fileID: 4991726340567435257}
+  textosDisponiveis:
+  - {fileID: 3475395748325813350}
+  - {fileID: 5986662973462047873}
+  - {fileID: 653871770650318506}
+  - {fileID: 4991726340567435257}
+  - {fileID: 5204503617844976324}
+  botoesDisponiveis:
+  - {fileID: 184557512531994722}
 --- !u!1 &1885890239898592398
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,8 +181,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 128.52, y: -141.46}
-  m_SizeDelta: {x: 257.04, y: 26.82}
+  m_AnchoredPosition: {x: 106.93685, y: -108.335754}
+  m_SizeDelta: {x: 199.1063, y: 21.0043}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3148930334061810392
 CanvasRenderer:
@@ -223,7 +250,6 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -375,7 +401,6 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -462,8 +487,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 321.52002, y: -86.4321}
-  m_SizeDelta: {x: 257.04, y: 0}
+  m_AnchoredPosition: {x: 299.93686, y: -86.4321}
+  m_SizeDelta: {x: 213.8737, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7294395475748267288
 CanvasRenderer:
@@ -522,10 +547,10 @@ MonoBehaviour:
     m_Bottom: 10
   m_ChildAlignment: 4
   m_Spacing: 5
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -578,8 +603,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 128.52, y: -95.840004}
-  m_SizeDelta: {x: 257.04, y: 0}
+  m_AnchoredPosition: {x: 106.93685, y: -68.06755}
+  m_SizeDelta: {x: 182.0264, y: 49.5321}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1354085887523383462
 CanvasRenderer:
@@ -636,10 +661,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 20.55
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -647,7 +672,6 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -694,7 +718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
-  m_VerticalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &3878768530728720567
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,8 +754,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 128.52, y: -36.815002}
-  m_SizeDelta: {x: 257.04, y: 53.63}
+  m_AnchoredPosition: {x: 106.93685, y: -24.15075}
+  m_SizeDelta: {x: 185.1307, y: 28.3015}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &359928867853127789
 CanvasRenderer:
@@ -788,10 +812,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
+  m_fontSize: 25.3
   m_fontSizeBase: 48
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -799,7 +823,6 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1196,7 +1219,6 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1268,7 +1290,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 453.4877, y: 162.8642}
+  m_SizeDelta: {x: 443.2711, y: 162.8642}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8548461558181153097
 CanvasRenderer:

@@ -332,6 +332,10 @@ MonoBehaviour:
     m_Localized: "drinks quentes com caf\xE9 rendem {0}"
     m_Metadata:
       m_Items: []
+  - m_Id: 183334582087680
+    m_Localized: Adquirir
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

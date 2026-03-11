@@ -333,6 +333,10 @@ MonoBehaviour:
     m_Localized: "hei\xDFe Kaffee-Cocktails bringen {0} ein"
     m_Metadata:
       m_Items: []
+  - m_Id: 183334582087680
+    m_Localized: Erwerben
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

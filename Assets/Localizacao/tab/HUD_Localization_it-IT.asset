@@ -334,6 +334,10 @@ MonoBehaviour:
     m_Localized: "I cocktail caldi al caff\xE8 rendono {0}"
     m_Metadata:
       m_Items: []
+  - m_Id: 183334582087680
+    m_Localized: Acquista
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

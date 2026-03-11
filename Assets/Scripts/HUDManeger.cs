@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -76,20 +77,6 @@ public class HUDManeger : MonoBehaviour
 
             return Mathf.Pow(1f + Mathf.Max(0f, percentualPorCompra), quantidadeComprada);
         }
-
-        public float AplicarMultiplicacaoProgressivaAoValor(float valorBase)
-        {
-            return Mathf.Max(0f, valorBase) * ObterMultiplicadorTotal();
-        }
-
-        public float ObterValorPassivoPorCiclo(float valorBasePorCompra)
-        {
-            if (categoria != CategoriaMelhoria.Passivo || quantidadeComprada <= 0)
-                return 0f;
-
-            float valorBaseTotal = Mathf.Max(0f, valorBasePorCompra) * quantidadeComprada;
-            return AplicarMultiplicacaoProgressivaAoValor(valorBaseTotal);
-        }
     }
 
     [Serializable]
@@ -117,10 +104,15 @@ public class HUDManeger : MonoBehaviour
         public TextMeshProUGUI textoDescricao;
         public TextMeshProUGUI textoValorAumentado;
         public TextMeshProUGUI textoPreco;
-        public TextMeshProUGUI textoBotaoComprar;
+        public TextMeshProUGUI textoBotao;
     }
 
-    #region ReferenciasHUD
+    [Serializable]
+    private class LinhaLocalizacaoCsv
+    {
+        public string chave;
+        public readonly Dictionary<string, string> valores = new Dictionary<string, string>();
+    }
 
     [Header("HUD")]
     public TextMeshProUGUI dinheiroText;
@@ -135,29 +127,12 @@ public class HUDManeger : MonoBehaviour
     [Tooltip("Tabela de localização usada para os textos das melhorias.")]
     public string nomeTabelaLocalizacao = "HUD_Upgrades";
 
-    [Tooltip("Chave de localização usada no texto do botão de compra.")]
-    public string chaveBotaoComprar = "upgrade.acquire";
-
     [Tooltip("Melhorias adicionais criadas por você no inspector. As 6 melhorias fallback são adicionadas automaticamente.")]
     public List<DefinicaoMelhoria> melhoriasManuais = new List<DefinicaoMelhoria>();
 
-    #endregion
-
-    #region TelaDeCarregamento
-
-    [Header("Tela de carregamento")]
-    [Tooltip("Objeto raiz opcional da tela de carregamento. Pode conter a imagem e o slider.")]
-    public GameObject telaCarregamentoRaiz;
-
-    [Tooltip("Imagem de tela cheia definida no inspector. Ela permanece ativa até o jogo terminar de carregar save, HUD e melhorias.")]
-    public Image imagemTelaCarregamento;
-
-    [Tooltip("Slider visual do carregamento. Ele será controlado de 0 a 100.")]
-    public Slider sliderCarregamento;
-
-    #endregion
-
-    #region EconomiaBase
+    [Header("Localização CSV (fallback)")]
+    [Tooltip("Se vazio, tenta carregar automaticamente Resources/HUD_Localization.csv")]
+    public TextAsset tabelaLocalizacaoCsv;
 
     [Header("Economia base")]
     [Tooltip("Valor base ganho por drink manual antes dos multiplicadores.")]
@@ -173,182 +148,197 @@ public class HUDManeger : MonoBehaviour
     [Tooltip("Valor mínimo usado como primeira referência de desbloqueio.")]
     public float valorInicialReferenciaDesbloqueio = 1f;
 
-    #endregion
-
-    #region EstadoInterno
-
     private readonly List<DefinicaoMelhoria> _melhorias = new List<DefinicaoMelhoria>();
     private readonly Dictionary<int, ItemUpgradeUI> _itensInstanciados = new Dictionary<int, ItemUpgradeUI>();
-    private readonly Dictionary<string, LocalizedString> _cacheStringsLocalizadas = new Dictionary<string, LocalizedString>();
+    private readonly Dictionary<string, LinhaLocalizacaoCsv> _localizacaoCsv = new Dictionary<string, LinhaLocalizacaoCsv>(StringComparer.OrdinalIgnoreCase);
 
     private bool _foiInicializado;
-    private bool _estaInicializando;
-    private bool _estaAtualizandoHUD;
-    private bool _listaVisualSuja = true;
-
-    private bool _carregamentoConcluido;
-    private bool _carregamentoEmAndamento;
-    private Coroutine _rotinaCarregamento;
-
+    private bool _localizacaoCsvCarregada;
     private int _quantidadeDesbloqueadas;
     private float _valorReferenciaDesbloqueio = 1f;
     private float _maiorDinheiroAtingido;
-
-    #endregion
-
-    #region CicloDeVida
+    private GameObject _templateMelhoriaCena;
+    private bool _recriandoLista;
+    private Coroutine _rotinaAguardarLocalizacao;
 
     private void OnEnable()
     {
-        LevelManenger.OnDinheiroMudar += AoDinheiroMudarNoHUD;
+        LevelManenger.OnDinheiroMudar += AtualizarDinheiro;
+        LevelManenger.OnDinheiroMudar += VerificarDesbloqueios;
         LocalizationSettings.SelectedLocaleChanged += AoMudarLocale;
+        IniciarAguardarLocalizacao();
     }
 
     private void OnDisable()
     {
-        LevelManenger.OnDinheiroMudar -= AoDinheiroMudarNoHUD;
+        LevelManenger.OnDinheiroMudar -= AtualizarDinheiro;
+        LevelManenger.OnDinheiroMudar -= VerificarDesbloqueios;
         LocalizationSettings.SelectedLocaleChanged -= AoMudarLocale;
+
+        if (_rotinaAguardarLocalizacao != null)
+        {
+            StopCoroutine(_rotinaAguardarLocalizacao);
+            _rotinaAguardarLocalizacao = null;
+        }
     }
 
     private void Start()
     {
-        IniciarFluxoDeCarregamentoInicial();
+        GarantirInicializado();
+        AtualizarTudo();
+    }
+
+    private void IniciarAguardarLocalizacao()
+    {
+        if (!isActiveAndEnabled || _rotinaAguardarLocalizacao != null)
+            return;
+
+        _rotinaAguardarLocalizacao = StartCoroutine(RotinaAguardarLocalizacao());
+    }
+
+    private IEnumerator RotinaAguardarLocalizacao()
+    {
+        var initOp = LocalizationSettings.InitializationOperation;
+        if (initOp.IsValid() && !initOp.IsDone)
+            yield return initOp;
+
+        _rotinaAguardarLocalizacao = null;
+        AtualizarTudo();
     }
 
     private void AoMudarLocale(UnityEngine.Localization.Locale _)
     {
-        if (_carregamentoEmAndamento)
-            return;
-
         AtualizarTudo();
-    }
-
-    private void AoDinheiroMudarNoHUD()
-    {
-        AtualizarDinheiro();
-
-        if (_carregamentoEmAndamento || !_foiInicializado)
-            return;
-
-        VerificarDesbloqueios();
-    }
-
-    #endregion
-
-    #region InicializacaoECarregamento
-
-    public void IniciarFluxoDeCarregamentoInicial()
-    {
-        if (_carregamentoConcluido || _carregamentoEmAndamento || !isActiveAndEnabled)
-            return;
-
-        if (_rotinaCarregamento != null)
-            StopCoroutine(_rotinaCarregamento);
-
-        _rotinaCarregamento = StartCoroutine(RotinaCarregamentoInicial());
-    }
-
-    private IEnumerator RotinaCarregamentoInicial()
-    {
-        _carregamentoEmAndamento = true;
-
-        MostrarTelaCarregamento(true);
-        DefinirProgressoCarregamento(0f);
-        yield return null;
-
-        if (GameDirector.instancia != null)
-            GameDirector.instancia.AtualizarReferenciasDaCena();
-
-        DefinirProgressoCarregamento(10f);
-        yield return null;
-
-        GarantirEstruturaInicializada();
-
-        DefinirProgressoCarregamento(30f);
-        yield return null;
-
-        if (GameDirector.instancia != null && GameDirector.instancia.saveManager != null)
-            GameDirector.instancia.saveManager.CarregarOuCriarNovoSave(false);
-
-        DefinirProgressoCarregamento(65f);
-        yield return null;
-
-        SincronizarListaVisualSeNecessario();
-
-        DefinirProgressoCarregamento(80f);
-        yield return null;
-
-        AtualizarTudo();
-
-        DefinirProgressoCarregamento(90f);
-        yield return null;
-
-        if (GameDirector.instancia != null && GameDirector.instancia.levelManenger != null)
-            GameDirector.instancia.levelManenger.ConcluirInicializacaoCenaJogo();
-
-        DefinirProgressoCarregamento(100f);
-        yield return null;
-
-        MostrarTelaCarregamento(false);
-
-        _carregamentoConcluido = true;
-        _carregamentoEmAndamento = false;
-        _rotinaCarregamento = null;
     }
 
     public void GarantirInicializado()
     {
-        GarantirEstruturaInicializada();
-        SincronizarListaVisualSeNecessario();
-    }
-
-    private void GarantirEstruturaInicializada()
-    {
-        if (_foiInicializado || _estaInicializando)
+        if (_foiInicializado)
             return;
 
-        _estaInicializando = true;
+        ResolverReferenciasAutomaticas();
+        CarregarLocalizacaoCsvSeNecessario();
+        CriarListaFallbackSeNecessario();
+        AplicarMelhoriasManuais();
+        OrdenarMelhorias();
+        InicializarEstadoPadraoSeNecessario();
+        RecriarListaVisual();
+        _foiInicializado = true;
+    }
 
-        try
+    public void ReinicializarHUDDaCena()
+    {
+        _foiInicializado = false;
+        _templateMelhoriaCena = null;
+        _recriandoLista = false;
+        _itensInstanciados.Clear();
+        GarantirInicializado();
+        AtualizarTudo();
+    }
+
+    private void ResolverReferenciasAutomaticas()
+    {
+        if (contentMelhorias == null)
         {
-            CriarListaFallbackSeNecessario();
-            AplicarMelhoriasManuais();
-            OrdenarMelhorias();
-            InicializarEstadoPadraoSeNecessario();
-            _foiInicializado = true;
-            MarcarListaVisualComoSuja();
+            GameObject contentObject = GameObject.Find("Content");
+            if (contentObject != null)
+                contentMelhorias = contentObject.transform;
         }
-        finally
+
+        if (contentMelhorias != null && prefabMelhoria == null && _templateMelhoriaCena == null)
         {
-            _estaInicializando = false;
+            for (int i = 0; i < contentMelhorias.childCount; i++)
+            {
+                Transform filho = contentMelhorias.GetChild(i);
+                if (filho.GetComponentInChildren<Button>(true) != null && filho.GetComponentInChildren<TextMeshProUGUI>(true) != null)
+                {
+                    _templateMelhoriaCena = filho.gameObject;
+                    _templateMelhoriaCena.SetActive(false);
+                    break;
+                }
+            }
         }
     }
 
-    private void MostrarTelaCarregamento(bool mostrar)
+    private void CarregarLocalizacaoCsvSeNecessario()
     {
-        if (telaCarregamentoRaiz != null)
-            telaCarregamentoRaiz.SetActive(mostrar);
-
-        if (imagemTelaCarregamento != null)
-            imagemTelaCarregamento.gameObject.SetActive(mostrar);
-
-        if (sliderCarregamento != null)
-            sliderCarregamento.gameObject.SetActive(mostrar);
-    }
-
-    private void DefinirProgressoCarregamento(float percentual)
-    {
-        if (sliderCarregamento == null)
+        if (_localizacaoCsvCarregada)
             return;
 
-        sliderCarregamento.minValue = 0f;
-        sliderCarregamento.maxValue = 100f;
-        sliderCarregamento.SetValueWithoutNotify(Mathf.Clamp(percentual, 0f, 100f));
+        _localizacaoCsvCarregada = true;
+        _localizacaoCsv.Clear();
+
+        if (tabelaLocalizacaoCsv == null)
+            tabelaLocalizacaoCsv = Resources.Load<TextAsset>("HUD_Localization");
+
+        if (tabelaLocalizacaoCsv == null || string.IsNullOrWhiteSpace(tabelaLocalizacaoCsv.text))
+            return;
+
+        string texto = tabelaLocalizacaoCsv.text.Replace("\r\n", "\n").Replace('\r', '\n');
+        string[] linhas = texto.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        if (linhas.Length <= 1)
+            return;
+
+        string[] cabecalhos = QuebrarCsv(linhas[0]);
+        for (int i = 1; i < linhas.Length; i++)
+        {
+            string linhaBruta = linhas[i];
+            if (string.IsNullOrWhiteSpace(linhaBruta))
+                continue;
+
+            string[] colunas = QuebrarCsv(linhaBruta);
+            if (colunas.Length == 0 || string.IsNullOrWhiteSpace(colunas[0]))
+                continue;
+
+            LinhaLocalizacaoCsv linha = new LinhaLocalizacaoCsv { chave = colunas[0] };
+            for (int c = 1; c < cabecalhos.Length && c < colunas.Length; c++)
+            {
+                string cabecalho = cabecalhos[c].Trim();
+                if (string.IsNullOrWhiteSpace(cabecalho))
+                    continue;
+
+                linha.valores[cabecalho] = colunas[c];
+            }
+
+            _localizacaoCsv[linha.chave] = linha;
+        }
     }
 
-    #endregion
+    private string[] QuebrarCsv(string linha)
+    {
+        List<string> valores = new List<string>();
+        bool emAspas = false;
+        System.Text.StringBuilder atual = new System.Text.StringBuilder();
 
-    #region SaveEEstado
+        for (int i = 0; i < linha.Length; i++)
+        {
+            char caractere = linha[i];
+            if (caractere == '"')
+            {
+                if (emAspas && i + 1 < linha.Length && linha[i + 1] == '"')
+                {
+                    atual.Append('"');
+                    i++;
+                }
+                else
+                {
+                    emAspas = !emAspas;
+                }
+            }
+            else if (caractere == ',' && !emAspas)
+            {
+                valores.Add(atual.ToString());
+                atual.Length = 0;
+            }
+            else
+            {
+                atual.Append(caractere);
+            }
+        }
+
+        valores.Add(atual.ToString());
+        return valores.ToArray();
+    }
 
     private void CriarListaFallbackSeNecessario()
     {
@@ -395,7 +385,7 @@ public class HUDManeger : MonoBehaviour
 
     private void InicializarEstadoPadraoSeNecessario()
     {
-        _quantidadeDesbloqueadas = Mathf.Clamp(ContarLiberadasNoInicio(), 1, Mathf.Max(1, _melhorias.Count));
+        _quantidadeDesbloqueadas = Mathf.Clamp(ContarLiberadasNoInicio(), 1, _melhorias.Count);
         _valorReferenciaDesbloqueio = Mathf.Max(1f, valorInicialReferenciaDesbloqueio);
         _maiorDinheiroAtingido = 0f;
     }
@@ -412,9 +402,9 @@ public class HUDManeger : MonoBehaviour
         return quantidade;
     }
 
-    public void AplicarSaveHUD(string json, bool atualizarHUD = true)
+    public void AplicarSaveHUD(string json)
     {
-        GarantirEstruturaInicializada();
+        GarantirInicializado();
 
         foreach (DefinicaoMelhoria melhoria in _melhorias)
             melhoria.quantidadeComprada = 0;
@@ -424,7 +414,7 @@ public class HUDManeger : MonoBehaviour
             SaveMelhoriasHUD save = JsonUtility.FromJson<SaveMelhoriasHUD>(json);
             if (save != null)
             {
-                _quantidadeDesbloqueadas = Mathf.Clamp(save.quantidadeDesbloqueadas, 1, Mathf.Max(1, _melhorias.Count));
+                _quantidadeDesbloqueadas = Mathf.Clamp(save.quantidadeDesbloqueadas, 1, _melhorias.Count);
                 _valorReferenciaDesbloqueio = Mathf.Max(1f, save.valorReferenciaDesbloqueio);
                 _maiorDinheiroAtingido = Mathf.Max(0f, save.maiorDinheiroAtingido);
 
@@ -444,16 +434,14 @@ public class HUDManeger : MonoBehaviour
             InicializarEstadoPadraoSeNecessario();
         }
 
-        _quantidadeDesbloqueadas = Mathf.Clamp(_quantidadeDesbloqueadas, 1, Mathf.Max(1, _melhorias.Count));
-        MarcarListaVisualComoSuja();
-
-        if (atualizarHUD)
-            AtualizarTudo();
+        _quantidadeDesbloqueadas = Mathf.Clamp(_quantidadeDesbloqueadas, 1, _melhorias.Count);
+        RecriarListaVisual();
+        AtualizarTudo();
     }
 
     public string ExportarSaveHUD()
     {
-        GarantirEstruturaInicializada();
+        GarantirInicializado();
 
         SaveMelhoriasHUD save = new SaveMelhoriasHUD
         {
@@ -475,186 +463,61 @@ public class HUDManeger : MonoBehaviour
         return JsonUtility.ToJson(save);
     }
 
-    public DadosEconomiaJogo CriarDadosEconomia(float dinheiroAtual)
-    {
-        GarantirEstruturaInicializada();
-
-        DadosEconomiaJogo dados = new DadosEconomiaJogo
-        {
-            dinheiroAtual = Mathf.Max(0f, dinheiroAtual),
-            totalComprasMelhorias = ObterTotalComprasMelhorias(),
-            quantidadeMelhoriasDesbloqueadas = _quantidadeDesbloqueadas,
-            valorReferenciaDesbloqueio = _valorReferenciaDesbloqueio,
-            maiorDinheiroAtingido = _maiorDinheiroAtingido,
-            melhorias = new List<DadosMelhoriaEconomia>()
-        };
-
-        foreach (DefinicaoMelhoria melhoria in _melhorias)
-        {
-            dados.melhorias.Add(new DadosMelhoriaEconomia
-            {
-                indiceTabela = melhoria.indiceTabela,
-                idMelhoria = $"upgrade.{melhoria.indiceTabela}",
-                categoria = melhoria.categoria.ToString(),
-                quantidadeComprada = melhoria.quantidadeComprada,
-                precoBase = melhoria.precoBase,
-                precoAtual = melhoria.ObterPrecoAtual(),
-                multiplicadorPreco = melhoria.multiplicadorPreco,
-                percentualPorCompra = melhoria.percentualPorCompra,
-                multiplicadorTotal = melhoria.ObterMultiplicadorTotal()
-            });
-        }
-
-        return dados;
-    }
-
-    public void AplicarDadosEconomia(DadosEconomiaJogo dados, bool atualizarHUD = true)
-    {
-        GarantirEstruturaInicializada();
-
-        foreach (DefinicaoMelhoria melhoria in _melhorias)
-            melhoria.quantidadeComprada = 0;
-
-        if (dados == null)
-        {
-            InicializarEstadoPadraoSeNecessario();
-            MarcarListaVisualComoSuja();
-
-            if (atualizarHUD)
-                AtualizarTudo();
-
-            return;
-        }
-
-        _quantidadeDesbloqueadas = Mathf.Clamp(dados.quantidadeMelhoriasDesbloqueadas, 1, Mathf.Max(1, _melhorias.Count));
-        _valorReferenciaDesbloqueio = Mathf.Max(1f, dados.valorReferenciaDesbloqueio);
-        _maiorDinheiroAtingido = Mathf.Max(0f, dados.maiorDinheiroAtingido);
-
-        if (dados.melhorias != null)
-        {
-            foreach (DadosMelhoriaEconomia estado in dados.melhorias)
-            {
-                DefinicaoMelhoria melhoria = ObterMelhoriaPorIndice(estado.indiceTabela);
-                if (melhoria != null)
-                    melhoria.quantidadeComprada = Mathf.Max(0, estado.quantidadeComprada);
-            }
-        }
-
-        _quantidadeDesbloqueadas = Mathf.Clamp(_quantidadeDesbloqueadas, 1, Mathf.Max(1, _melhorias.Count));
-        MarcarListaVisualComoSuja();
-
-        if (atualizarHUD)
-            AtualizarTudo();
-    }
-
-    #endregion
-
-    #region ListaVisual
-
-    private void MarcarListaVisualComoSuja()
-    {
-        _listaVisualSuja = true;
-    }
-
-    private void SincronizarListaVisualSeNecessario()
-    {
-        if (!_listaVisualSuja)
-            return;
-
-        RecriarListaVisual();
-        _listaVisualSuja = false;
-    }
-
     private void RecriarListaVisual()
     {
-        if (contentMelhorias == null || prefabMelhoria == null)
+        if (_recriandoLista)
             return;
 
-        if (_itensInstanciados.Count == 0)
-            LimparFilhosPreExistentesDoContainer();
+        _recriandoLista = true;
+        _itensInstanciados.Clear();
+        ResolverReferenciasAutomaticas();
 
-        LimparReferenciasInvalidasDosItens();
-
-        HashSet<int> indicesVisiveis = new HashSet<int>();
-        int limite = Mathf.Min(_quantidadeDesbloqueadas, _melhorias.Count);
-
-        for (int i = 0; i < limite; i++)
+        if (contentMelhorias == null)
         {
-            DefinicaoMelhoria melhoria = _melhorias[i];
-            ItemUpgradeUI item = ObterOuCriarItem(melhoria);
-            if (item == null || item.instancia == null)
-                continue;
-
-            item.instancia.name = $"Melhoria_{melhoria.indiceTabela}";
-            item.instancia.SetActive(true);
-            item.instancia.transform.SetSiblingIndex(i);
-            indicesVisiveis.Add(melhoria.indiceTabela);
+            _recriandoLista = false;
+            return;
         }
 
-        foreach (KeyValuePair<int, ItemUpgradeUI> par in _itensInstanciados)
-        {
-            if (indicesVisiveis.Contains(par.Key))
-                continue;
-
-            if (par.Value != null && par.Value.instancia != null)
-                par.Value.instancia.SetActive(false);
-        }
-    }
-
-    private void LimparFilhosPreExistentesDoContainer()
-    {
         for (int i = contentMelhorias.childCount - 1; i >= 0; i--)
-            Destroy(contentMelhorias.GetChild(i).gameObject);
-    }
-
-    private void LimparReferenciasInvalidasDosItens()
-    {
-        List<int> indicesInvalidos = null;
-
-        foreach (KeyValuePair<int, ItemUpgradeUI> par in _itensInstanciados)
         {
-            if (par.Value != null && par.Value.instancia != null)
+            GameObject filho = contentMelhorias.GetChild(i).gameObject;
+            if (_templateMelhoriaCena != null && filho == _templateMelhoriaCena)
                 continue;
 
-            indicesInvalidos ??= new List<int>();
-            indicesInvalidos.Add(par.Key);
+            Destroy(filho);
         }
 
-        if (indicesInvalidos == null)
+        int quantidade = Mathf.Min(_quantidadeDesbloqueadas, _melhorias.Count);
+        for (int i = 0; i < quantidade; i++)
+            InstanciarItem(_melhorias[i]);
+
+        _recriandoLista = false;
+    }
+
+    private void InstanciarItem(DefinicaoMelhoria melhoria)
+    {
+        GameObject origem = prefabMelhoria != null ? prefabMelhoria : _templateMelhoriaCena;
+        if (origem == null)
             return;
 
-        foreach (int indice in indicesInvalidos)
-            _itensInstanciados.Remove(indice);
-    }
+        GameObject instancia;
+        if (_templateMelhoriaCena != null && origem == _templateMelhoriaCena)
+            instancia = Instantiate(_templateMelhoriaCena, contentMelhorias);
+        else
+            instancia = Instantiate(prefabMelhoria, contentMelhorias);
 
-    private ItemUpgradeUI ObterOuCriarItem(DefinicaoMelhoria melhoria)
-    {
-        if (_itensInstanciados.TryGetValue(melhoria.indiceTabela, out ItemUpgradeUI item) && item != null && item.instancia != null)
-            return item;
-
-        item = InstanciarItem(melhoria);
-        _itensInstanciados[melhoria.indiceTabela] = item;
-        return item;
-    }
-
-    private ItemUpgradeUI InstanciarItem(DefinicaoMelhoria melhoria)
-    {
-        GameObject instancia = Instantiate(prefabMelhoria, contentMelhorias);
         instancia.name = $"Melhoria_{melhoria.indiceTabela}";
-
-        Button botaoComprar = EncontrarBotaoPorNomeOuCaminho(instancia.transform, "Corpo/Button", "Button");
+        instancia.SetActive(true);
 
         ItemUpgradeUI item = new ItemUpgradeUI
         {
             instancia = instancia,
-            botaoComprar = botaoComprar,
-            textoTitulo = EncontrarTMPPorNomeOuCaminho(instancia.transform, "Cabecalho/Textos/Titulo", "Titulo"),
-            textoDescricao = EncontrarTMPPorNomeOuCaminho(instancia.transform, "Cabecalho/Textos/Descricao", "Descricao"),
-            textoValorAumentado = EncontrarTMPPorNomeOuCaminho(instancia.transform, "Cabecalho/Textos/Ganho", "Ganho"),
-            textoPreco = EncontrarTMPPorNomeOuCaminho(instancia.transform, "Corpo/Preco", "Preco"),
-            textoBotaoComprar = botaoComprar != null
-                ? EncontrarTMPPorNomeOuCaminho(botaoComprar.transform, "Text (TMP)", "Text (TMP)")
-                : null
+            botaoComprar = instancia.GetComponentInChildren<Button>(true),
+            textoTitulo = EncontrarTMP(instancia.transform, "Titulo"),
+            textoDescricao = EncontrarTMP(instancia.transform, "Descricao"),
+            textoValorAumentado = EncontrarTMP(instancia.transform, "Ganho"),
+            textoPreco = EncontrarTMP(instancia.transform, "Preco"),
+            textoBotao = EncontrarTMP(instancia.transform, "Text (TMP)")
         };
 
         if (item.botaoComprar != null)
@@ -663,87 +526,32 @@ public class HUDManeger : MonoBehaviour
             item.botaoComprar.onClick.AddListener(() => ComprarMelhoria(melhoria.indiceTabela));
         }
 
-        return item;
+        _itensInstanciados[melhoria.indiceTabela] = item;
+        AtualizarItemVisual(melhoria);
     }
 
-    private static Button EncontrarBotaoPorNomeOuCaminho(Transform raiz, string caminhoPreferencial, string nomeFallback)
+    private TextMeshProUGUI EncontrarTMP(Transform raiz, string nome)
     {
         if (raiz == null)
             return null;
 
-        Transform porCaminho = raiz.Find(caminhoPreferencial);
-        if (porCaminho != null && porCaminho.TryGetComponent(out Button botaoPorCaminho))
-            return botaoPorCaminho;
-
-        Transform porNome = EncontrarTransformRecursivo(raiz, nomeFallback);
-        if (porNome != null && porNome.TryGetComponent(out Button botaoPorNome))
-            return botaoPorNome;
-
-        return raiz.GetComponentInChildren<Button>(true);
-    }
-
-    private static TextMeshProUGUI EncontrarTMPPorNomeOuCaminho(Transform raiz, string caminhoPreferencial, string nomeFallback)
-    {
-        if (raiz == null)
-            return null;
-
-        Transform porCaminho = raiz.Find(caminhoPreferencial);
-        if (porCaminho != null && porCaminho.TryGetComponent(out TextMeshProUGUI textoPorCaminho))
-            return textoPorCaminho;
-
-        Transform porNome = EncontrarTransformRecursivo(raiz, nomeFallback);
-        if (porNome != null && porNome.TryGetComponent(out TextMeshProUGUI textoPorNome))
-            return textoPorNome;
-
-        return null;
-    }
-
-    private static Transform EncontrarTransformRecursivo(Transform raiz, string nome)
-    {
-        if (raiz == null || string.IsNullOrWhiteSpace(nome))
-            return null;
-
-        if (raiz.name == nome)
-            return raiz;
-
-        for (int i = 0; i < raiz.childCount; i++)
+        TextMeshProUGUI[] textos = raiz.GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (TextMeshProUGUI texto in textos)
         {
-            Transform encontrado = EncontrarTransformRecursivo(raiz.GetChild(i), nome);
-            if (encontrado != null)
-                return encontrado;
+            if (texto != null && texto.name.Equals(nome, StringComparison.OrdinalIgnoreCase))
+                return texto;
         }
 
         return null;
     }
-
-    #endregion
-
-    #region AtualizacaoHUD
 
     public void AtualizarTudo()
     {
-        if (_estaAtualizandoHUD)
-            return;
+        GarantirInicializado();
+        AtualizarDinheiro();
 
-        GarantirEstruturaInicializada();
-        _estaAtualizandoHUD = true;
-
-        try
-        {
-            SincronizarListaVisualSeNecessario();
-            AtualizarDinheiro();
-
-            float valorCliqueFinal = CalcularValorCliqueFinal();
-            float valorPassivoFinal = CalcularValorPassivoFinalPorCiclo();
-            int limite = Mathf.Min(_quantidadeDesbloqueadas, _melhorias.Count);
-
-            for (int i = 0; i < limite; i++)
-                AtualizarItemVisual(_melhorias[i], valorCliqueFinal, valorPassivoFinal);
-        }
-        finally
-        {
-            _estaAtualizandoHUD = false;
-        }
+        foreach (DefinicaoMelhoria melhoria in _melhorias)
+            AtualizarItemVisual(melhoria);
     }
 
     public void AtualizarDinheiro()
@@ -757,85 +565,23 @@ public class HUDManeger : MonoBehaviour
 
     private void VerificarDesbloqueios()
     {
-        if (!_foiInicializado || _carregamentoEmAndamento || _estaAtualizandoHUD || GameDirector.instancia == null || GameDirector.instancia.levelManenger == null || _melhorias.Count == 0)
+        if (GameDirector.instancia == null || GameDirector.instancia.levelManenger == null)
             return;
 
         float dinheiroAtual = GameDirector.instancia.levelManenger.dinheiro;
         _maiorDinheiroAtingido = Mathf.Max(_maiorDinheiroAtingido, dinheiroAtual);
 
-        if (_quantidadeDesbloqueadas >= _melhorias.Count || multiplicadorDesbloqueio <= 1f)
-            return;
-
-        float limiteDesbloqueio = Mathf.Max(1f, _valorReferenciaDesbloqueio) * multiplicadorDesbloqueio;
-        if (_maiorDinheiroAtingido < limiteDesbloqueio)
-            return;
-
-        _quantidadeDesbloqueadas = Mathf.Clamp(_quantidadeDesbloqueadas + 1, 1, _melhorias.Count);
-        _valorReferenciaDesbloqueio = Mathf.Max(1f, _maiorDinheiroAtingido);
-
-        MarcarListaVisualComoSuja();
-        AtualizarTudo();
-    }
-
-    private void AtualizarItemVisual(DefinicaoMelhoria melhoria, float valorCliqueFinal, float valorPassivoFinal)
-    {
-        if (!_itensInstanciados.TryGetValue(melhoria.indiceTabela, out ItemUpgradeUI item))
-            return;
-
-        string titulo = ObterTextoLocalizado(melhoria.ObterChaveTitulo(), ObterFallbackTitulo(melhoria));
-        string descricao = ObterTextoLocalizado(
-            melhoria.ObterChaveDescricao(),
-            ObterFallbackDescricao(melhoria),
-            FormatarPercentual(melhoria.ObterPercentualTotal()));
-        string valor = ObterTextoLocalizado(
-            melhoria.ObterChaveValor(),
-            ObterFallbackValor(melhoria),
-            FormatarMoeda(melhoria.categoria == CategoriaMelhoria.Ativo ? valorCliqueFinal : valorPassivoFinal));
-
-        string textoBotaoComprar = ObterTextoLocalizado(chaveBotaoComprar, "Adquirir");
-
-        if (item.textoTitulo != null)
-            item.textoTitulo.text = titulo;
-        if (item.textoDescricao != null)
-            item.textoDescricao.text = descricao;
-        if (item.textoValorAumentado != null)
-            item.textoValorAumentado.text = valor;
-        if (item.textoPreco != null)
-            item.textoPreco.text = FormatarMoeda(melhoria.ObterPrecoAtual());
-        if (item.textoBotaoComprar != null)
-            item.textoBotaoComprar.text = textoBotaoComprar;
-    }
-
-    private string ObterTextoLocalizado(string chave, string fallback, params object[] argumentos)
-    {
-        try
+        bool desbloqueou = false;
+        while (_quantidadeDesbloqueadas < _melhorias.Count && _maiorDinheiroAtingido >= Mathf.Max(1f, _valorReferenciaDesbloqueio) * multiplicadorDesbloqueio)
         {
-            if (string.IsNullOrWhiteSpace(nomeTabelaLocalizacao))
-                return argumentos != null && argumentos.Length > 0 ? string.Format(fallback, argumentos) : fallback;
-
-            if (!_cacheStringsLocalizadas.TryGetValue(chave, out LocalizedString localizedString))
-            {
-                localizedString = new LocalizedString(nomeTabelaLocalizacao, chave);
-                _cacheStringsLocalizadas[chave] = localizedString;
-            }
-
-            string resultado = argumentos != null && argumentos.Length > 0
-                ? localizedString.GetLocalizedString(argumentos)
-                : localizedString.GetLocalizedString();
-
-            return string.IsNullOrWhiteSpace(resultado)
-                ? (argumentos != null && argumentos.Length > 0 ? string.Format(fallback, argumentos) : fallback)
-                : resultado;
+            _quantidadeDesbloqueadas++;
+            _valorReferenciaDesbloqueio = Mathf.Max(1f, _maiorDinheiroAtingido);
+            desbloqueou = true;
         }
-        catch
-        {
-            return argumentos != null && argumentos.Length > 0 ? string.Format(fallback, argumentos) : fallback;
-        }
+
+        if (desbloqueou)
+            RecriarListaVisual();
     }
-
-    #endregion
-
-    #region CompraECalculos
 
     public bool ComprarMelhoria(int indiceTabela)
     {
@@ -854,24 +600,27 @@ public class HUDManeger : MonoBehaviour
         level.AddDinheiro(-preco);
         melhoria.quantidadeComprada += 1;
         AtualizarTudo();
+        GameDirector.instancia.saveManager?.Salvar();
         return true;
     }
 
     public float ObterValorCliqueFinal()
     {
-        GarantirEstruturaInicializada();
-        return CalcularValorCliqueFinal();
+        return valorBaseDrinkManual * ObterMultiplicadorCategoria(CategoriaMelhoria.Ativo);
     }
 
     public float ObterValorPassivoFinalPorCiclo()
     {
-        GarantirEstruturaInicializada();
-        return CalcularValorPassivoFinalPorCiclo();
+        int comprasPassivas = ObterTotalComprasPorCategoria(CategoriaMelhoria.Passivo);
+        if (comprasPassivas <= 0)
+            return 0f;
+
+        return valorBaseDrinkPassivoPorCompra * comprasPassivas * ObterMultiplicadorCategoria(CategoriaMelhoria.Passivo);
     }
 
     public float ObterMultiplicadorCategoria(CategoriaMelhoria categoria)
     {
-        GarantirEstruturaInicializada();
+        GarantirInicializado();
 
         float acumulado = 1f;
         foreach (DefinicaoMelhoria melhoria in _melhorias)
@@ -885,28 +634,9 @@ public class HUDManeger : MonoBehaviour
         return Mathf.Max(1f, acumulado);
     }
 
-    public int ObterTotalComprasMelhorias()
-    {
-        GarantirEstruturaInicializada();
-
-        int total = 0;
-        foreach (DefinicaoMelhoria melhoria in _melhorias)
-            total += melhoria.quantidadeComprada;
-
-        return total;
-    }
-
-    public int ObterQuantidadeCompradaMelhoria(int indiceTabela)
-    {
-        GarantirEstruturaInicializada();
-
-        DefinicaoMelhoria melhoria = ObterMelhoriaPorIndice(indiceTabela);
-        return melhoria != null ? Mathf.Max(0, melhoria.quantidadeComprada) : 0;
-    }
-
     public int ObterTotalComprasPorCategoria(CategoriaMelhoria categoria)
     {
-        GarantirEstruturaInicializada();
+        GarantirInicializado();
 
         int total = 0;
         foreach (DefinicaoMelhoria melhoria in _melhorias)
@@ -929,32 +659,126 @@ public class HUDManeger : MonoBehaviour
         return null;
     }
 
-    private float CalcularValorCliqueFinal()
+    private void AtualizarItemVisual(DefinicaoMelhoria melhoria)
     {
-        float valor = Mathf.Max(0f, valorBaseDrinkManual);
-        foreach (DefinicaoMelhoria melhoria in _melhorias)
-        {
-            if (melhoria.categoria != CategoriaMelhoria.Ativo)
-                continue;
+        if (!_itensInstanciados.TryGetValue(melhoria.indiceTabela, out ItemUpgradeUI item))
+            return;
 
-            valor = melhoria.AplicarMultiplicacaoProgressivaAoValor(valor);
+        string titulo = ObterTextoLocalizado(melhoria.ObterChaveTitulo(), ObterFallbackTitulo(melhoria));
+        string descricao = ObterTextoLocalizado(
+            melhoria.ObterChaveDescricao(),
+            ObterFallbackDescricao(melhoria),
+            FormatarPercentual(melhoria.ObterPercentualTotal()));
+        string valor = ObterTextoLocalizado(
+            melhoria.ObterChaveValor(),
+            ObterFallbackValor(melhoria),
+            FormatarMoeda(melhoria.categoria == CategoriaMelhoria.Ativo ? ObterValorCliqueFinal() : ObterValorPassivoFinalPorCiclo()));
+        string textoBotao = ObterTextoLocalizado("upgrade.acquire", ObterFallbackAdquirir());
+
+        if (item.textoTitulo != null)
+            item.textoTitulo.text = titulo;
+        if (item.textoDescricao != null)
+            item.textoDescricao.text = descricao;
+        if (item.textoValorAumentado != null)
+            item.textoValorAumentado.text = valor;
+        if (item.textoPreco != null)
+            item.textoPreco.text = FormatarMoeda(melhoria.ObterPrecoAtual());
+        if (item.textoBotao != null)
+            item.textoBotao.text = textoBotao;
+        if (item.botaoComprar != null && GameDirector.instancia != null && GameDirector.instancia.levelManenger != null)
+            item.botaoComprar.interactable = GameDirector.instancia.levelManenger.dinheiro >= melhoria.ObterPrecoAtual();
+    }
+
+    private string ObterTextoLocalizado(string chave, string fallback, params object[] argumentos)
+    {
+        string resultado = null;
+
+        try
+        {
+            LocalizedString localizedString = new LocalizedString(nomeTabelaLocalizacao, chave);
+            resultado = argumentos != null && argumentos.Length > 0
+                ? localizedString.GetLocalizedString(argumentos)
+                : localizedString.GetLocalizedString();
+        }
+        catch
+        {
+            resultado = null;
         }
 
-        return valor;
+        if (string.IsNullOrWhiteSpace(resultado) || string.Equals(resultado, chave, StringComparison.OrdinalIgnoreCase))
+            resultado = ObterTextoCsv(chave, argumentos);
+
+        if (string.IsNullOrWhiteSpace(resultado))
+            resultado = argumentos != null && argumentos.Length > 0 ? string.Format(fallback, argumentos) : fallback;
+
+        return resultado;
     }
 
-    private float CalcularValorPassivoFinalPorCiclo()
+    private string ObterTextoCsv(string chave, params object[] argumentos)
     {
-        float total = 0f;
-        foreach (DefinicaoMelhoria melhoria in _melhorias)
-            total += melhoria.ObterValorPassivoPorCiclo(valorBaseDrinkPassivoPorCompra);
+        CarregarLocalizacaoCsvSeNecessario();
+        if (!_localizacaoCsv.TryGetValue(chave, out LinhaLocalizacaoCsv linha))
+            return null;
 
-        return Mathf.Max(0f, total);
+        string codigoLocale = ObterCodigoLocaleAtual();
+        string valor = null;
+
+        if (!string.IsNullOrWhiteSpace(codigoLocale))
+        {
+            foreach (KeyValuePair<string, string> entrada in linha.valores)
+            {
+                if (entrada.Key.IndexOf($"({codigoLocale})", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    valor = entrada.Value;
+                    break;
+                }
+            }
+
+            if (valor == null && codigoLocale.Contains("-"))
+            {
+                string idioma = codigoLocale.Split('-')[0];
+                foreach (KeyValuePair<string, string> entrada in linha.valores)
+                {
+                    if (entrada.Key.IndexOf($"({idioma}", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        valor = entrada.Value;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(valor))
+        {
+            foreach (KeyValuePair<string, string> entrada in linha.valores)
+            {
+                if (entrada.Key.IndexOf("(pt-BR)", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    valor = entrada.Value;
+                    break;
+                }
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(valor))
+            return null;
+
+        return argumentos != null && argumentos.Length > 0 ? string.Format(valor, argumentos) : valor;
     }
 
-    #endregion
+    private string ObterCodigoLocaleAtual()
+    {
+        try
+        {
+            if (LocalizationSettings.SelectedLocale != null && LocalizationSettings.SelectedLocale.Identifier.Code != null)
+                return LocalizationSettings.SelectedLocale.Identifier.Code;
+        }
+        catch
+        {
+        }
 
-    #region Formatacao
+        return CultureInfo.CurrentUICulture?.Name;
+    }
 
     private string ObterFallbackTitulo(DefinicaoMelhoria melhoria)
     {
@@ -994,6 +818,14 @@ public class HUDManeger : MonoBehaviour
             : "Auto drinks rendem {0}";
     }
 
+    private string ObterFallbackAdquirir()
+    {
+        string codigoLocale = ObterCodigoLocaleAtual();
+        return codigoLocale != null && codigoLocale.StartsWith("en", StringComparison.OrdinalIgnoreCase)
+            ? "Acquire"
+            : "Adquirir";
+    }
+
     public static string FormatarMoeda(float valor)
     {
         return "$ " + FormatarComPrefixo(valor, 2);
@@ -1020,6 +852,4 @@ public class HUDManeger : MonoBehaviour
 
         return valorFormatado.ToString($"F{casasDecimais}") + prefixos[indice];
     }
-
-    #endregion
 }

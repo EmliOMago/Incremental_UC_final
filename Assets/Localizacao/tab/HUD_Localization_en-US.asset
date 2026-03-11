@@ -331,6 +331,10 @@ MonoBehaviour:
     m_Localized: hot coffee cocktails earn {0}
     m_Metadata:
       m_Items: []
+  - m_Id: 183334582087680
+    m_Localized: Acquire
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

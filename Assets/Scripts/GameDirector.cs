@@ -12,30 +12,44 @@ public class GameDirector : MonoBehaviour
 
     private void Awake()
     {
-        if (instancia == null)
+        if (instancia != null && instancia != this)
         {
-            instancia = this;
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += AoCarregarCena;
+            instancia.AssumirReferenciasDaCena(this);
+            Destroy(this);
+            return;
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+
+        instancia = this;
+        AtualizarReferenciasDaCena();
+    }
+
+    private void Start()
+    {
+        AtualizarReferenciasDaCena();
+
+        if (levelManenger != null)
+            levelManenger.InicializarCenaJogo();
     }
 
     private void OnDestroy()
     {
         if (instancia == this)
-            SceneManager.sceneLoaded -= AoCarregarCena;
+            instancia = null;
     }
 
-    private void AoCarregarCena(Scene cena, LoadSceneMode modo)
+    private void AssumirReferenciasDaCena(GameDirector diretorDaCena)
     {
-        AtualizarReferenciasDaCena();
+        if (diretorDaCena == null)
+            return;
 
-        if (cena.name == "CenaJogo" && levelManenger != null)
-            levelManenger.InicializarCenaJogo();
+        if (diretorDaCena.saveManager != null)
+            saveManager = diretorDaCena.saveManager;
+        if (diretorDaCena.levelManenger != null)
+            levelManenger = diretorDaCena.levelManenger;
+        if (diretorDaCena.hudManeger != null)
+            hudManeger = diretorDaCena.hudManeger;
+
+        AtualizarReferenciasDaCena();
     }
 
     public void AtualizarReferenciasDaCena()
@@ -43,7 +57,17 @@ public class GameDirector : MonoBehaviour
         if (saveManager == null)
             saveManager = GetComponent<SaveManagerPlayerPrefs>();
 
-        levelManenger = FindFirstObjectByType<LevelManenger>();
-        hudManeger = FindFirstObjectByType<HUDManeger>();
+        if (levelManenger == null)
+            levelManenger = FindFirstObjectByType<LevelManenger>(FindObjectsInactive.Include);
+        else if (levelManenger.gameObject.scene.name != SceneManager.GetActiveScene().name)
+            levelManenger = FindFirstObjectByType<LevelManenger>(FindObjectsInactive.Include);
+
+        if (hudManeger == null)
+            hudManeger = FindFirstObjectByType<HUDManeger>(FindObjectsInactive.Include);
+        else if (hudManeger.gameObject.scene.name != SceneManager.GetActiveScene().name)
+            hudManeger = FindFirstObjectByType<HUDManeger>(FindObjectsInactive.Include);
+
+        if (saveManager == null)
+            saveManager = FindFirstObjectByType<SaveManagerPlayerPrefs>(FindObjectsInactive.Include);
     }
 }

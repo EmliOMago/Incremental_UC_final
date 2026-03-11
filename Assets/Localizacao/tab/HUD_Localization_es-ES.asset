@@ -335,6 +335,10 @@ MonoBehaviour:
     m_Localized: "c\xF3cteles calientes con caf\xE9 generan {0}"
     m_Metadata:
       m_Items: []
+  - m_Id: 183334582087680
+    m_Localized: Adquirir
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
