@@ -9,14 +9,17 @@ public class GameDirector : MonoBehaviour
     public LevelManenger levelManenger;
     public HUDManeger hudManeger;
     public SaveManagerPlayerPrefs saveManager;
-    
+
     private void Awake()
     {
         if (instancia != null && instancia != this)
         {
-            instancia.AssumirReferenciasDaCena(this);
-            Destroy(this);
-            return;
+            bool diretorDaMesmaCena = instancia && instancia.gameObject.scene == gameObject.scene;
+            if (diretorDaMesmaCena)
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
 
         instancia = this;

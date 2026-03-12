@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7141300632238373980}
   - component: {fileID: 4518619269111239911}
   - component: {fileID: 7947414003968120484}
-  - component: {fileID: 6234069854162174347}
+  - component: {fileID: 1259912997262721104}
   m_Layer: 5
   m_Name: Atualizacao
   m_TagString: Untagged
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 2
---- !u!114 &6234069854162174347
+--- !u!114 &1259912997262721104
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 426784102626521257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd385b2ae43643f47ad97826006406fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 49e0d8177e7e4a7e9e8a95dbeb8f1a55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   botaoComprar: {fileID: 184557512531994722}

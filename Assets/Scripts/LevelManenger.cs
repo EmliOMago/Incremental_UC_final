@@ -4,8 +4,6 @@ using UnityEngine;
 public class LevelManenger : MonoBehaviour
 {
     public float dinheiro = 0;
-    public float qntGanhosPassivos;
-    public float qntMultiplicadores;
 
     [Header("Ganho passivo")]
     [Tooltip("Tempo entre cada pagamento do ganho passivo, em segundos")]
@@ -15,38 +13,68 @@ public class LevelManenger : MonoBehaviour
 
     private Coroutine rotinaGanhoPassivo;
     private Coroutine rotinaAutoSave;
+    private Coroutine rotinaInicializacao;
     private bool cenaInicializada;
+
+    private void Start()
+    {
+        GameDirector.instancia?.AtualizarReferenciasDaCena();
+        GameDirector.instancia?.saveManager?.SolicitarCarregamentoInicial();
+    }
 
     private void OnDisable()
     {
+        if (rotinaInicializacao != null)
+        {
+            StopCoroutine(rotinaInicializacao);
+            rotinaInicializacao = null;
+        }
+
         PararRotinas();
     }
 
     public void InicializarCenaJogo()
     {
-        if (cenaInicializada)
+        if (rotinaInicializacao != null)
         {
-            OnDinheiroMudar?.Invoke();
-            GameDirector.instancia?.hudManeger?.AtualizarTudo();
-            return;
+            StopCoroutine(rotinaInicializacao);
+            rotinaInicializacao = null;
         }
 
-        cenaInicializada = true;
+        rotinaInicializacao = StartCoroutine(RotinaInicializarCenaJogo());
+    }
+
+    private IEnumerator RotinaInicializarCenaJogo()
+    {
+        cenaInicializada = false;
         PararRotinas();
 
         if (GameDirector.instancia != null)
             GameDirector.instancia.AtualizarReferenciasDaCena();
 
-        if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
-            GameDirector.instancia.hudManeger.ReinicializarHUDDaCena();
+        HUDManeger hud = GameDirector.instancia != null ? GameDirector.instancia.hudManeger : null;
+        SaveManagerPlayerPrefs saveManager = GameDirector.instancia != null ? GameDirector.instancia.saveManager : null;
 
-        CarregarJogo();
+        hud?.PrepararTelaCarregamento();
+        yield return null;
+
+        if (hud != null)
+            hud.ReinicializarHUDDaCena();
+
+        saveManager?.SolicitarCarregamentoInicial();
+        while (saveManager != null && !saveManager.CarregamentoInicialConcluido)
+            yield return null;
+
         OnDinheiroMudar?.Invoke();
+        yield return new WaitForSeconds(0.1f);
 
-        if (GameDirector.instancia != null && GameDirector.instancia.hudManeger != null)
-            GameDirector.instancia.hudManeger.AtualizarTudo();
+        hud?.AtualizarTudo();
+        yield return null;
 
         IniciarRotinas();
+        cenaInicializada = true;
+        hud?.ConcluirTelaCarregamento();
+        rotinaInicializacao = null;
     }
 
     private void IniciarRotinas()

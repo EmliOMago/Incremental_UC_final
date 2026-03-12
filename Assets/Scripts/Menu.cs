@@ -1,9 +1,17 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
+    private void Update()
+    {
+        if (!SceneManager.GetActiveScene().name.Equals("CenaMenu") || !Input.GetKeyDown(KeyCode.F12))
+            return;
+
+        SaveManagerPlayerPrefs.LimparSaveGlobal();
+        Debug.Log("Save limpo no menu inicial.");
+    }
+
     public void IniciarJogo()
     {
         SceneManager.LoadScene("CenaJogo");
@@ -28,7 +36,7 @@ public class Menu : MonoBehaviour
 
         Application.Quit();
 #if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
+        UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
 }
