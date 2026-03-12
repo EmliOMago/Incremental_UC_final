@@ -14,7 +14,6 @@ public class LevelManenger : MonoBehaviour
     private Coroutine rotinaGanhoPassivo;
     private Coroutine rotinaAutoSave;
     private Coroutine rotinaInicializacao;
-    private bool cenaInicializada;
 
     private void Start()
     {
@@ -46,7 +45,6 @@ public class LevelManenger : MonoBehaviour
 
     private IEnumerator RotinaInicializarCenaJogo()
     {
-        cenaInicializada = false;
         PararRotinas();
 
         if (GameDirector.instancia != null)
@@ -72,7 +70,6 @@ public class LevelManenger : MonoBehaviour
         yield return null;
 
         IniciarRotinas();
-        cenaInicializada = true;
         hud?.ConcluirTelaCarregamento();
         rotinaInicializacao = null;
     }
@@ -146,11 +143,9 @@ public class LevelManenger : MonoBehaviour
         while (true)
         {
             SaveManagerPlayerPrefs saveManager = GameDirector.instancia != null ? GameDirector.instancia.saveManager : null;
-            float espera = saveManager != null ? saveManager.IntervaloAutoSaveSegundos : 5f;
-            yield return new WaitForSeconds(Mathf.Max(0.25f, espera));
-
-            if (saveManager != null)
-                saveManager.SalvarSeNecessario();
+            float espera = saveManager != null ? saveManager.ObterIntervaloAutoSaveSegundos() : 5f;
+            yield return new WaitForSeconds(espera);
+            saveManager?.SalvarSeNecessario();
         }
     }
 

@@ -40,12 +40,6 @@ public class AtualizacaoPrefabBindings : MonoBehaviour
         PreencherReferenciasPelosNomesPadrao();
     }
 
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        AtualizarListasDeComponentes();
-    }
-#endif
 
     [ContextMenu("Atualizar listas de componentes filhos")]
     public void AtualizarListasDeComponentes()

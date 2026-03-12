@@ -693,10 +693,11 @@ public class HUDManeger : MonoBehaviour
             return;
 
         AtualizarDinheiro();
-        AtualizarEstadoVisualDinamicoDosItens();
+        AtualizarInteratividadeDosItens();
+        GameDirector.instancia?.saveManager?.MarcarSaveComoSujo();
     }
 
-    private void AtualizarEstadoVisualDinamicoDosItens()
+    private void AtualizarInteratividadeDosItens()
     {
         foreach (DefinicaoMelhoria melhoria in _melhorias)
         {
@@ -705,16 +706,11 @@ public class HUDManeger : MonoBehaviour
 
             bool atingiuMaximo = MelhoriaAtingiuNivelMaximo(melhoria);
 
-            if (item.textoPreco != null)
-                DefinirTextoTMP(item.textoPreco, atingiuMaximo ? "MAX" : FormatarMoeda(melhoria.ObterPrecoAtual()));
-
             if (item.botaoComprar != null && GameDirector.instancia != null && GameDirector.instancia.levelManenger != null)
                 item.botaoComprar.interactable = !atingiuMaximo && GameDirector.instancia.levelManenger.dinheiro >= melhoria.ObterPrecoAtual();
 
-            if (item.textoBotaoComprar != null)
-                DefinirTextoTMP(item.textoBotaoComprar, atingiuMaximo ? "MAX" : ObterTextoLocalizado("upgrade.acquire", "Adquirir"));
-
-            AtualizarCorDaMelhoria(item, melhoria);
+            if (atingiuMaximo && item.textoBotaoComprar != null)
+                DefinirTextoTMP(item.textoBotaoComprar, "MAX");
         }
     }
 

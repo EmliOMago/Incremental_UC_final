@@ -109,7 +109,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManagerPlayerPrefs
   intervaloAutoSaveSegundos: 30
-  salvarImediatamenteAoCriarNovoSave: 1
 --- !u!1001 &3380535279467807521
 PrefabInstance:
   m_ObjectHideFlags: 0
