@@ -60,19 +60,13 @@ public class HUDManeger : MonoBehaviour
 
         public float ObterPercentualTotal()
         {
-            if (quantidadeComprada <= 0)
-                return 0f;
-
-            float multiplicador = Mathf.Pow(1f + Mathf.Max(0f, percentualPorCompra), quantidadeComprada);
-            return (multiplicador - 1f) * 100f;
+            int quantidadeLimitada = Mathf.Clamp(quantidadeComprada, 0, 20);
+            return quantidadeLimitada;
         }
 
         public float ObterMultiplicadorTotal()
         {
-            if (quantidadeComprada <= 0)
-                return 1f;
-
-            return Mathf.Pow(1f + Mathf.Max(0f, percentualPorCompra), quantidadeComprada);
+            return 1f + (ObterPercentualTotal() / 100f);
         }
     }
 
@@ -102,6 +96,7 @@ public class HUDManeger : MonoBehaviour
         public TextMeshProUGUI textoDescricao;
         public TextMeshProUGUI textoValorAumentado;
         public TextMeshProUGUI textoPreco;
+        public Image imagemNivel;
     }
 
     [Header("HUD")]
@@ -145,6 +140,16 @@ public class HUDManeger : MonoBehaviour
 
     [Tooltip("Valor mínimo usado como primeira referência de desbloqueio.")]
     public float valorInicialReferenciaDesbloqueio = 1f;
+
+    [Header("Balanceamento das melhorias")]
+    [Tooltip("Quantidade máxima de compras por melhoria.")]
+    public int limiteComprasPorMelhoria = 20;
+
+    [Header("Visual de níveis das melhorias")]
+    public Color corNivelZero = Color.white;
+    public Color corNivelAte8 = new Color(0.92f, 0.22f, 0.22f, 1f);
+    public Color corNivelAte19 = new Color(1f, 0.84f, 0f, 1f);
+    public Color corNivel20 = new Color(0.68f, 0.32f, 1f, 1f);
 
     private readonly List<DefinicaoMelhoria> _melhorias = new List<DefinicaoMelhoria>();
     private readonly Dictionary<int, ItemUpgradeUI> _itensInstanciados = new Dictionary<int, ItemUpgradeUI>();
@@ -258,12 +263,12 @@ public class HUDManeger : MonoBehaviour
     {
         _melhorias.Clear();
 
-        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 0, categoria = CategoriaMelhoria.Ativo, precoBase = 10f, multiplicadorPreco = 1.18f, percentualPorCompra = 0.50f, liberadaNoInicio = true });
-        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 1, categoria = CategoriaMelhoria.Passivo, precoBase = 100f, multiplicadorPreco = 1.20f, percentualPorCompra = 0.35f, liberadaNoInicio = false });
-        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 2, categoria = CategoriaMelhoria.Ativo, precoBase = 1000f, multiplicadorPreco = 1.22f, percentualPorCompra = 0.75f, liberadaNoInicio = false });
-        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 3, categoria = CategoriaMelhoria.Passivo, precoBase = 10000f, multiplicadorPreco = 1.25f, percentualPorCompra = 0.60f, liberadaNoInicio = false });
-        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 4, categoria = CategoriaMelhoria.Ativo, precoBase = 100000f, multiplicadorPreco = 1.28f, percentualPorCompra = 1.00f, liberadaNoInicio = false });
-        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 5, categoria = CategoriaMelhoria.Passivo, precoBase = 1000000f, multiplicadorPreco = 1.30f, percentualPorCompra = 0.90f, liberadaNoInicio = false });
+        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 0, categoria = CategoriaMelhoria.Ativo, precoBase = 10f, multiplicadorPreco = 1.18f, percentualPorCompra = 0.01f, liberadaNoInicio = true });
+        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 1, categoria = CategoriaMelhoria.Passivo, precoBase = 100f, multiplicadorPreco = 1.20f, percentualPorCompra = 0.01f, liberadaNoInicio = false });
+        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 2, categoria = CategoriaMelhoria.Ativo, precoBase = 1000f, multiplicadorPreco = 1.22f, percentualPorCompra = 0.01f, liberadaNoInicio = false });
+        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 3, categoria = CategoriaMelhoria.Passivo, precoBase = 10000f, multiplicadorPreco = 1.25f, percentualPorCompra = 0.01f, liberadaNoInicio = false });
+        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 4, categoria = CategoriaMelhoria.Ativo, precoBase = 100000f, multiplicadorPreco = 1.28f, percentualPorCompra = 0.01f, liberadaNoInicio = false });
+        _melhorias.Add(new DefinicaoMelhoria { indiceTabela = 5, categoria = CategoriaMelhoria.Passivo, precoBase = 1000000f, multiplicadorPreco = 1.30f, percentualPorCompra = 0.01f, liberadaNoInicio = false });
     }
 
     private void AplicarMelhoriasManuais()
@@ -338,7 +343,7 @@ public class HUDManeger : MonoBehaviour
                     {
                         DefinicaoMelhoria melhoria = ObterMelhoriaPorIndice(estado.indice);
                         if (melhoria != null)
-                            melhoria.quantidadeComprada = Mathf.Max(0, estado.quantidade);
+                            melhoria.quantidadeComprada = Mathf.Clamp(estado.quantidade, 0, ObterLimiteCompras(melhoria));
                     }
                 }
             }
@@ -377,7 +382,7 @@ public class HUDManeger : MonoBehaviour
 
                     DefinicaoMelhoria melhoria = ObterMelhoriaPorIndice(estado.indiceTabela);
                     if (melhoria != null)
-                        melhoria.quantidadeComprada = Mathf.Max(0, estado.quantidadeComprada);
+                        melhoria.quantidadeComprada = Mathf.Clamp(estado.quantidadeComprada, 0, ObterLimiteCompras(melhoria));
                 }
             }
         }
@@ -408,7 +413,7 @@ public class HUDManeger : MonoBehaviour
             save.melhorias.Add(new EstadoMelhoriaSave
             {
                 indice = melhoria.indiceTabela,
-                quantidade = melhoria.quantidadeComprada
+                quantidade = Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria))
             });
         }
 
@@ -433,18 +438,18 @@ public class HUDManeger : MonoBehaviour
             if (melhoria == null)
                 continue;
 
-            dados.totalComprasMelhorias += Mathf.Max(0, melhoria.quantidadeComprada);
+            dados.totalComprasMelhorias += Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria));
             dados.melhorias.Add(new DadosMelhoriaEconomia
             {
                 indiceTabela = melhoria.indiceTabela,
                 idMelhoria = $"upgrade.{melhoria.indiceTabela}",
                 categoria = melhoria.categoria.ToString(),
-                quantidadeComprada = Mathf.Max(0, melhoria.quantidadeComprada),
+                quantidadeComprada = Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria)),
                 precoBase = melhoria.precoBase,
                 precoAtual = melhoria.ObterPrecoAtual(),
                 multiplicadorPreco = melhoria.multiplicadorPreco,
-                percentualPorCompra = melhoria.percentualPorCompra,
-                multiplicadorTotal = melhoria.ObterMultiplicadorTotal()
+                percentualPorCompra = ObterPercentualAtivoDaMelhoria(melhoria) / 100f,
+                multiplicadorTotal = ObterMultiplicadorDaMelhoria(melhoria)
             });
         }
 
@@ -490,6 +495,9 @@ public class HUDManeger : MonoBehaviour
         TextMeshProUGUI textoBotao = bindings != null && bindings.TextoBotaoComprar != null
             ? bindings.TextoBotaoComprar
             : BuscarTextoBotao(instancia.transform, botao);
+        Image imagemNivel = bindings != null && bindings.ImagemNivel != null
+            ? bindings.ImagemNivel
+            : BuscarComponenteFilhoPorNome<Image>(instancia.transform, "Image");
 
         ItemUpgradeUI item = new ItemUpgradeUI
         {
@@ -499,7 +507,8 @@ public class HUDManeger : MonoBehaviour
             textoTitulo = textoTitulo,
             textoDescricao = textoDescricao,
             textoValorAumentado = textoValor,
-            textoPreco = textoPreco
+            textoPreco = textoPreco,
+            imagemNivel = imagemNivel
         };
 
         if (item.botaoComprar != null)
@@ -694,11 +703,18 @@ public class HUDManeger : MonoBehaviour
             if (!_itensInstanciados.TryGetValue(melhoria.indiceTabela, out ItemUpgradeUI item))
                 continue;
 
+            bool atingiuMaximo = MelhoriaAtingiuNivelMaximo(melhoria);
+
             if (item.textoPreco != null)
-                DefinirTextoTMP(item.textoPreco, FormatarMoeda(melhoria.ObterPrecoAtual()));
+                DefinirTextoTMP(item.textoPreco, atingiuMaximo ? "MAX" : FormatarMoeda(melhoria.ObterPrecoAtual()));
 
             if (item.botaoComprar != null && GameDirector.instancia != null && GameDirector.instancia.levelManenger != null)
-                item.botaoComprar.interactable = GameDirector.instancia.levelManenger.dinheiro >= melhoria.ObterPrecoAtual();
+                item.botaoComprar.interactable = !atingiuMaximo && GameDirector.instancia.levelManenger.dinheiro >= melhoria.ObterPrecoAtual();
+
+            if (item.textoBotaoComprar != null)
+                DefinirTextoTMP(item.textoBotaoComprar, atingiuMaximo ? "MAX" : ObterTextoLocalizado("upgrade.acquire", "Adquirir"));
+
+            AtualizarCorDaMelhoria(item, melhoria);
         }
     }
 
@@ -719,7 +735,10 @@ public class HUDManeger : MonoBehaviour
         }
 
         if (houveDesbloqueio)
+        {
             RecriarListaVisual();
+            GameDirector.instancia?.saveManager?.MarcarSaveComoSujo();
+        }
     }
 
     public bool ComprarMelhoria(int indiceTabela)
@@ -731,29 +750,53 @@ public class HUDManeger : MonoBehaviour
         if (melhoria == null)
             return false;
 
+        if (MelhoriaAtingiuNivelMaximo(melhoria))
+            return false;
+
         float preco = melhoria.ObterPrecoAtual();
         LevelManenger level = GameDirector.instancia.levelManenger;
         if (level.dinheiro < preco)
             return false;
 
         level.AddDinheiro(-preco);
-        melhoria.quantidadeComprada += 1;
+        melhoria.quantidadeComprada = Mathf.Clamp(melhoria.quantidadeComprada + 1, 0, ObterLimiteCompras(melhoria));
+        GameDirector.instancia?.saveManager?.MarcarSaveComoSujo();
         AtualizarTudo();
         return true;
     }
 
     public float ObterValorCliqueFinal()
     {
-        return valorBaseDrinkManual * ObterMultiplicadorCategoria(CategoriaMelhoria.Ativo);
+        if (!_foiInicializado && !_estaInicializando)
+            GarantirInicializado();
+
+        float bonusPercentual = 0f;
+        foreach (DefinicaoMelhoria melhoria in _melhorias)
+        {
+            if (melhoria.categoria != CategoriaMelhoria.Ativo)
+                continue;
+
+            bonusPercentual += ObterPercentualAtivoDaMelhoria(melhoria);
+        }
+
+        return valorBaseDrinkManual * (1f + (bonusPercentual / 100f));
     }
 
     public float ObterValorPassivoFinalPorCiclo()
     {
-        int comprasPassivas = ObterTotalComprasPorCategoria(CategoriaMelhoria.Passivo);
-        if (comprasPassivas <= 0)
-            return 0f;
+        if (!_foiInicializado && !_estaInicializando)
+            GarantirInicializado();
 
-        return valorBaseDrinkPassivoPorCompra * comprasPassivas * ObterMultiplicadorCategoria(CategoriaMelhoria.Passivo);
+        float total = 0f;
+        foreach (DefinicaoMelhoria melhoria in _melhorias)
+        {
+            if (melhoria.categoria != CategoriaMelhoria.Passivo)
+                continue;
+
+            total += ObterValorPassivoDaMelhoriaPorCiclo(melhoria);
+        }
+
+        return Mathf.Max(0f, total);
     }
 
     public float ObterMultiplicadorCategoria(CategoriaMelhoria categoria)
@@ -761,16 +804,21 @@ public class HUDManeger : MonoBehaviour
         if (!_foiInicializado && !_estaInicializando)
             GarantirInicializado();
 
-        float acumulado = 1f;
-        foreach (DefinicaoMelhoria melhoria in _melhorias)
+        if (categoria == CategoriaMelhoria.Ativo)
         {
-            if (melhoria.categoria != categoria)
-                continue;
+            float bonusPercentual = 0f;
+            foreach (DefinicaoMelhoria melhoria in _melhorias)
+            {
+                if (melhoria.categoria != CategoriaMelhoria.Ativo)
+                    continue;
 
-            acumulado *= melhoria.ObterMultiplicadorTotal();
+                bonusPercentual += ObterPercentualAtivoDaMelhoria(melhoria);
+            }
+
+            return Mathf.Max(1f, 1f + (bonusPercentual / 100f));
         }
 
-        return Mathf.Max(1f, acumulado);
+        return 1f;
     }
 
     public int ObterTotalComprasPorCategoria(CategoriaMelhoria categoria)
@@ -786,6 +834,117 @@ public class HUDManeger : MonoBehaviour
         }
 
         return total;
+    }
+
+    private int ObterLimiteCompras(DefinicaoMelhoria melhoria)
+    {
+        return Mathf.Max(1, limiteComprasPorMelhoria);
+    }
+
+    private bool MelhoriaAtingiuNivelMaximo(DefinicaoMelhoria melhoria)
+    {
+        if (melhoria == null)
+            return false;
+
+        return Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria)) >= ObterLimiteCompras(melhoria);
+    }
+
+    private int ObterOrdemDaMelhoriaNaCategoria(DefinicaoMelhoria melhoria)
+    {
+        if (melhoria == null)
+            return 0;
+
+        int ordem = 0;
+        foreach (DefinicaoMelhoria atual in _melhorias)
+        {
+            if (atual == null || atual.categoria != melhoria.categoria)
+                continue;
+
+            if (atual == melhoria || atual.indiceTabela == melhoria.indiceTabela)
+                return ordem;
+
+            ordem++;
+        }
+
+        return ordem;
+    }
+
+    private float ObterPercentualAtivoDaMelhoria(DefinicaoMelhoria melhoria)
+    {
+        if (melhoria == null)
+            return 0f;
+
+        int nivel = Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria));
+        return Mathf.Min(20f, nivel);
+    }
+
+    private float ObterGanhoPassivoBaseDaMelhoria(DefinicaoMelhoria melhoria)
+    {
+        int ordem = ObterOrdemDaMelhoriaNaCategoria(melhoria);
+        return 0.5f * (ordem + 1);
+    }
+
+    private float ObterGanhoPassivoPorNivelDaMelhoria(DefinicaoMelhoria melhoria)
+    {
+        int ordem = ObterOrdemDaMelhoriaNaCategoria(melhoria);
+        return 0.1f * (ordem + 1);
+    }
+
+    private float ObterValorPassivoDaMelhoriaPorCiclo(DefinicaoMelhoria melhoria)
+    {
+        if (melhoria == null)
+            return 0f;
+
+        int nivel = Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria));
+        if (nivel <= 0)
+            return 0f;
+
+        return ObterGanhoPassivoBaseDaMelhoria(melhoria) + (ObterGanhoPassivoPorNivelDaMelhoria(melhoria) * (nivel - 1));
+    }
+
+    private float ObterMultiplicadorDaMelhoria(DefinicaoMelhoria melhoria)
+    {
+        if (melhoria == null)
+            return 1f;
+
+        if (melhoria.categoria == CategoriaMelhoria.Ativo)
+            return 1f + (ObterPercentualAtivoDaMelhoria(melhoria) / 100f);
+
+        return 1f;
+    }
+
+    private string ObterArgumentoDescricaoDaMelhoria(DefinicaoMelhoria melhoria)
+    {
+        if (melhoria == null)
+            return string.Empty;
+
+        if (melhoria.categoria == CategoriaMelhoria.Ativo)
+            return FormatarPercentual(ObterPercentualAtivoDaMelhoria(melhoria));
+
+        return FormatarMoeda(ObterValorPassivoDaMelhoriaPorCiclo(melhoria));
+    }
+
+    private Color CalcularCorDaMelhoriaPorNivel(int nivel)
+    {
+        int nivelLimitado = Mathf.Clamp(nivel, 0, Mathf.Max(1, limiteComprasPorMelhoria));
+        if (nivelLimitado <= 0)
+            return corNivelZero;
+
+        if (nivelLimitado >= limiteComprasPorMelhoria)
+            return corNivel20;
+
+        if (nivelLimitado <= 8)
+            return Color.Lerp(corNivelZero, corNivelAte8, nivelLimitado / 8f);
+
+        return Color.Lerp(corNivelAte8, corNivelAte19, (nivelLimitado - 8f) / 11f);
+    }
+
+    private void AtualizarCorDaMelhoria(ItemUpgradeUI item, DefinicaoMelhoria melhoria)
+    {
+        if (item == null || item.imagemNivel == null || melhoria == null)
+            return;
+
+        item.imagemNivel.color = CalcularCorDaMelhoriaPorNivel(Mathf.Clamp(melhoria.quantidadeComprada, 0, ObterLimiteCompras(melhoria)));
     }
 
     private DefinicaoMelhoria ObterMelhoriaPorIndice(int indiceTabela)
@@ -811,14 +970,18 @@ public class HUDManeger : MonoBehaviour
         if (!_itensInstanciados.TryGetValue(melhoria.indiceTabela, out ItemUpgradeUI item))
             return;
 
+        bool atingiuMaximo = MelhoriaAtingiuNivelMaximo(melhoria);
+
         DefinirTextoTMP(item.textoTitulo, ObterFallbackTitulo(melhoria));
-        DefinirTextoTMP(item.textoDescricao, FormatarFallback(ObterFallbackDescricao(melhoria), FormatarPercentual(melhoria.ObterPercentualTotal())));
-        DefinirTextoTMP(item.textoValorAumentado, FormatarFallback(ObterFallbackValor(melhoria), FormatarMoeda(melhoria.categoria == CategoriaMelhoria.Ativo ? ObterValorCliqueFinal() : ObterValorPassivoFinalPorCiclo())));
-        DefinirTextoTMP(item.textoPreco, FormatarMoeda(melhoria.ObterPrecoAtual()));
-        DefinirTextoTMP(item.textoBotaoComprar, "Adquirir");
+        DefinirTextoTMP(item.textoDescricao, FormatarFallback(ObterFallbackDescricao(melhoria), ObterArgumentoDescricaoDaMelhoria(melhoria)));
+        DefinirTextoTMP(item.textoValorAumentado, FormatarFallback(ObterFallbackValor(melhoria), melhoria.categoria == CategoriaMelhoria.Ativo ? FormatarMoeda(ObterValorCliqueFinal()) : FormatarMoeda(ObterValorPassivoFinalPorCiclo()) + "/tick"));
+        DefinirTextoTMP(item.textoPreco, atingiuMaximo ? "MAX" : FormatarMoeda(melhoria.ObterPrecoAtual()));
+        DefinirTextoTMP(item.textoBotaoComprar, atingiuMaximo ? "MAX" : "Adquirir");
 
         if (item.botaoComprar != null && GameDirector.instancia != null && GameDirector.instancia.levelManenger != null)
-            item.botaoComprar.interactable = GameDirector.instancia.levelManenger.dinheiro >= melhoria.ObterPrecoAtual();
+            item.botaoComprar.interactable = !atingiuMaximo && GameDirector.instancia.levelManenger.dinheiro >= melhoria.ObterPrecoAtual();
+
+        AtualizarCorDaMelhoria(item, melhoria);
     }
 
     private void AplicarLocalizacaoAoItem(DefinicaoMelhoria melhoria)
@@ -827,15 +990,16 @@ public class HUDManeger : MonoBehaviour
             return;
 
         string titulo = ObterTextoLocalizado(melhoria.ObterChaveTitulo(), ObterFallbackTitulo(melhoria));
+        bool atingiuMaximo = MelhoriaAtingiuNivelMaximo(melhoria);
         string descricao = ObterTextoLocalizado(
             melhoria.ObterChaveDescricao(),
             ObterFallbackDescricao(melhoria),
-            FormatarPercentual(melhoria.ObterPercentualTotal()));
+            ObterArgumentoDescricaoDaMelhoria(melhoria));
         string valor = ObterTextoLocalizado(
             melhoria.ObterChaveValor(),
             ObterFallbackValor(melhoria),
-            FormatarMoeda(melhoria.categoria == CategoriaMelhoria.Ativo ? ObterValorCliqueFinal() : ObterValorPassivoFinalPorCiclo()));
-        string textoBotao = ObterTextoLocalizado("upgrade.acquire", "Adquirir");
+            melhoria.categoria == CategoriaMelhoria.Ativo ? FormatarMoeda(ObterValorCliqueFinal()) : FormatarMoeda(ObterValorPassivoFinalPorCiclo()) + "/tick");
+        string textoBotao = atingiuMaximo ? "MAX" : ObterTextoLocalizado("upgrade.acquire", "Adquirir");
 
         DefinirTextoTMP(item.textoTitulo, titulo);
         DefinirTextoTMP(item.textoDescricao, descricao);
@@ -1174,15 +1338,15 @@ public class HUDManeger : MonoBehaviour
         switch (melhoria.indiceTabela)
         {
             case 0: return "Aumenta o lucro por drink manual em {0}.";
-            case 1: return "Multiplica o lucro automático de drinks em {0}.";
-            case 2: return "Multiplica os drinks vendidos no clique em {0}.";
-            case 3: return "Multiplica os drinks automáticos em {0}.";
-            case 4: return "Valoriza cada drink manual em {0}.";
-            case 5: return "Expande a renda automática de drinks em {0}.";
+            case 1: return "Aumenta a renda automática em {0} por tick.";
+            case 2: return "Aumenta o ganho por clique em {0}.";
+            case 3: return "Aumenta a renda automática em {0} por tick.";
+            case 4: return "Aumenta o ganho por clique em {0}.";
+            case 5: return "Aumenta a renda automática em {0} por tick.";
             default:
                 return melhoria.categoria == CategoriaMelhoria.Ativo
-                    ? "Multiplica os drinks manuais em {0}."
-                    : "Multiplica os drinks automáticos em {0}.";
+                    ? "Aumenta o ganho por clique em {0}."
+                    : "Aumenta a renda automática em {0} por tick.";
         }
     }
 

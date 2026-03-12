@@ -73,12 +73,3 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-Assets/Multimidia/Imagens/StarSkyboxLimpo/CubemapStars.cubemap
-*.zip
-/Assets/Samples
-Assets/Samples.meta
-Importes/Localization/Modern CSV/config/Modern CSV.ini
-/Executável/Mocozado/MocozadoInterestelar_Data
-/MocozadoLauncher/MocozadoLauncher/obj
-/Executável/Mocozado/MocozadoInterestelar_BurstDebugInformation_DoNotShip
-/Executável

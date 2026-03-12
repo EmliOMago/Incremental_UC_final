@@ -138,6 +138,7 @@ MonoBehaviour:
   textoDescricao: {fileID: 5986662973462047873}
   textoGanho: {fileID: 653871770650318506}
   textoPreco: {fileID: 4991726340567435257}
+  imagemNivel: {fileID: 5254528484703127048}
   textosDisponiveis:
   - {fileID: 3475395748325813350}
   - {fileID: 5986662973462047873}
@@ -146,6 +147,8 @@ MonoBehaviour:
   - {fileID: 5204503617844976324}
   botoesDisponiveis:
   - {fileID: 184557512531994722}
+  imagensDisponiveis:
+  - {fileID: 5254528484703127048}
 --- !u!1 &1885890239898592398
 GameObject:
   m_ObjectHideFlags: 0

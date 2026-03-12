@@ -110,6 +110,7 @@ public class LevelManenger : MonoBehaviour
         if (dinheiro < 0f)
             dinheiro = 0f;
 
+        GameDirector.instancia?.saveManager?.MarcarSaveComoSujo();
         OnDinheiroMudar?.Invoke();
     }
 
@@ -144,8 +145,12 @@ public class LevelManenger : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(5f);
-            GameDirector.instancia?.saveManager?.Salvar();
+            SaveManagerPlayerPrefs saveManager = GameDirector.instancia != null ? GameDirector.instancia.saveManager : null;
+            float espera = saveManager != null ? saveManager.IntervaloAutoSaveSegundos : 5f;
+            yield return new WaitForSeconds(Mathf.Max(0.25f, espera));
+
+            if (saveManager != null)
+                saveManager.SalvarSeNecessario();
         }
     }
 

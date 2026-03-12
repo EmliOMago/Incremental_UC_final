@@ -12,8 +12,21 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
     private const string NomeArquivoJson = "estado_atual_jogo.json";
     private const string NomeArquivoCsv = "estado_atual_jogo.csv";
 
+    [Header("Auto save")]
+    [Tooltip("Intervalo, em segundos, entre tentativas de auto save.")]
+    [Min(0.25f)]
+    public float intervaloAutoSaveSegundos = 5f;
+
+    [Tooltip("Se verdadeiro, o jogo grava os arquivos imediatamente após criar um save zerado.")]
+    public bool salvarImediatamenteAoCriarNovoSave = true;
+
     private bool _carregamentoInicialSolicitado;
+    private bool _savePendente;
+    private string _ultimoJsonSalvo;
+    private string _ultimoCsvSalvo;
+
     public bool CarregamentoInicialConcluido { get; private set; }
+    public float IntervaloAutoSaveSegundos => Mathf.Max(0.25f, intervaloAutoSaveSegundos);
 
     private void Start()
     {
@@ -34,11 +47,33 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
 
     public void Salvar()
     {
+        Salvar(forcar: true);
+    }
+
+    public bool SalvarSeNecessario()
+    {
+        return Salvar(forcar: false);
+    }
+
+    public void MarcarSaveComoSujo()
+    {
+        _savePendente = true;
+    }
+
+    private bool Salvar(bool forcar)
+    {
+        if (!forcar && !_savePendente)
+            return false;
+
         DadosEconomiaJogo dados = CapturarDadosEconomia();
         if (dados == null)
-            return;
+            return false;
 
-        SalvarDadosNosArquivos(dados);
+        bool escreveu = SalvarDadosNosArquivos(dados, forcar);
+        if (escreveu)
+            _savePendente = false;
+
+        return escreveu;
     }
 
     public void Carregar()
@@ -49,6 +84,7 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
 
         AplicarDadosAoJogo(dados);
         ExportarArquivosEstadoAtual();
+        _savePendente = false;
     }
 
     public void CarregarOuCriar()
@@ -57,11 +93,13 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         if (dados == null)
         {
             dados = CriarEstadoZerado();
-            SalvarDadosNosArquivos(dados);
+            if (salvarImediatamenteAoCriarNovoSave)
+                SalvarDadosNosArquivos(dados, true);
         }
 
         AplicarDadosAoJogo(dados);
         ExportarArquivosEstadoAtual();
+        _savePendente = false;
     }
 
     public void LimparSaveCompleto()
@@ -70,7 +108,8 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
 
         DadosEconomiaJogo dados = CriarEstadoZerado();
         AplicarDadosAoJogo(dados);
-        SalvarDadosNosArquivos(dados);
+        SalvarDadosNosArquivos(dados, true);
+        _savePendente = false;
     }
 
     public static void LimparSaveGlobal()
@@ -84,14 +123,14 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         if (dados == null)
             return;
 
-        ExportarArquivosEstadoAtual(dados);
+        ExportarArquivosEstadoAtual(dados, true);
     }
 
-    private void ExportarArquivosEstadoAtual(DadosEconomiaJogo dados)
+    private bool ExportarArquivosEstadoAtual(DadosEconomiaJogo dados, bool forcarEscrita)
     {
         string diretorio = ObterDiretorioDaAplicacao();
         if (string.IsNullOrWhiteSpace(diretorio))
-            return;
+            return false;
 
         Directory.CreateDirectory(diretorio);
 
@@ -101,16 +140,33 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         string json = JsonUtility.ToJson(dados, true);
         string csv = ConverterDadosParaCsv(dados);
 
-        File.WriteAllText(caminhoJson, AplicarCriptografiaSeNecessario(json), Encoding.UTF8);
-        File.WriteAllText(caminhoCsv, AplicarCriptografiaSeNecessario(csv), Encoding.UTF8);
+        bool mudouJson = !string.Equals(_ultimoJsonSalvo, json, StringComparison.Ordinal);
+        bool mudouCsv = !string.Equals(_ultimoCsvSalvo, csv, StringComparison.Ordinal);
+
+        if (!forcarEscrita && !mudouJson && !mudouCsv)
+            return false;
+
+        if (forcarEscrita || mudouJson)
+        {
+            File.WriteAllText(caminhoJson, AplicarCriptografiaSeNecessario(json), Encoding.UTF8);
+            _ultimoJsonSalvo = json;
+        }
+
+        if (forcarEscrita || mudouCsv)
+        {
+            File.WriteAllText(caminhoCsv, AplicarCriptografiaSeNecessario(csv), Encoding.UTF8);
+            _ultimoCsvSalvo = csv;
+        }
+
+        return forcarEscrita || mudouJson || mudouCsv;
     }
 
-    private void SalvarDadosNosArquivos(DadosEconomiaJogo dados)
+    private bool SalvarDadosNosArquivos(DadosEconomiaJogo dados, bool forcarEscrita)
     {
         if (dados == null)
-            return;
+            return false;
 
-        ExportarArquivosEstadoAtual(dados);
+        return ExportarArquivosEstadoAtual(dados, forcarEscrita);
     }
 
     private DadosEconomiaJogo LerDadosDosArquivos()
@@ -130,7 +186,10 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             if (string.IsNullOrWhiteSpace(conteudo))
                 return null;
 
-            return JsonUtility.FromJson<DadosEconomiaJogo>(conteudo);
+            DadosEconomiaJogo dados = JsonUtility.FromJson<DadosEconomiaJogo>(conteudo);
+            _ultimoJsonSalvo = JsonUtility.ToJson(dados, true);
+            _ultimoCsvSalvo = ConverterDadosParaCsv(dados);
+            return dados;
         }
         catch (Exception ex)
         {
