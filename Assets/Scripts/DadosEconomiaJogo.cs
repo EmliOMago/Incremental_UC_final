@@ -13,6 +13,12 @@ public class DadosEconomiaJogo
 }
 
 [Serializable]
+public static class DadosJogador
+{
+    public static string NomeJogador;
+}
+
+[Serializable]
 public class DadosMelhoriaEconomia
 {
     public int indiceTabela;

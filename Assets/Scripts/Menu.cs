@@ -1,9 +1,13 @@
 using System.Data;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
+    [SerializeField] private InputField InsNome;
+
     private void Update()
     {
         if (!SceneManager.GetActiveScene().name.Equals("CenaMenu") || !Input.GetKeyDown(KeyCode.F12))
@@ -13,7 +17,22 @@ public class Menu : MonoBehaviour
         Debug.Log("Save limpo no menu inicial.");
     }
 
+    public void AtualizarNome()
+    {
+        if (InsNome != null)
+        {
+            DadosJogador.NomeJogador = InsNome.text;
+            Debug.Log(DadosJogador.NomeJogador);
+        }
+    }
+
     public void IniciarJogo()
+    {
+        AtualizarNome();
+        Invoke("Comecar", 1f);
+    }
+
+    private void Comecar()
     {
         SceneManager.LoadScene("CenaJogo");
     }
