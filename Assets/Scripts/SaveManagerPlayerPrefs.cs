@@ -1,13 +1,18 @@
 using System;
+using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class SaveManagerPlayerPrefs : MonoBehaviour
 {
+
+    #region save local
+
     private const string ChaveCriptografiaArquivos = "EmliOMago";
     private const string NomeArquivoJson = "estado_atual_jogo.json";
     private const string NomeArquivoCsv = "estado_atual_jogo.csv";
@@ -114,6 +119,10 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             return;
 
         ExportarArquivosEstadoAtual(dados);
+
+        float dinheiro = dados.dinheiroAtual;
+        string nome = "nome";
+        InserirLinhaNoBanco(nome, dinheiro);
     }
 
     private void ExportarArquivosEstadoAtual(DadosEconomiaJogo dados)
@@ -196,7 +205,7 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         };
     }
 
-    private void AplicarDadosAoJogo(DadosEconomiaJogo dados)
+    public void AplicarDadosAoJogo(DadosEconomiaJogo dados)
     {
         GameDirector.instancia?.AtualizarReferenciasDaCena();
 
@@ -207,7 +216,7 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             GameDirector.instancia.hudManeger.AplicarDadosEconomiaJogo(dados);
     }
 
-    private DadosEconomiaJogo CapturarDadosEconomia()
+    public DadosEconomiaJogo CapturarDadosEconomia()
     {
         GameDirector.instancia?.AtualizarReferenciasDaCena();
 
@@ -246,16 +255,17 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             File.Delete(caminhoCsv);
     }
 
+
     private static string ConverterDadosParaCsv(DadosEconomiaJogo dados)
     {
         StringBuilder sb = new StringBuilder(1024);
-        sb.AppendLine("Secao,Campo,Valor");
-        sb.AppendLine("Resumo,dataUtc," + EscaparCsv(DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture)));
-        sb.AppendLine("Resumo,dinheiroAtual," + FormatarNumero(dados.dinheiroAtual));
-        sb.AppendLine("Resumo,totalComprasMelhorias," + dados.totalComprasMelhorias.ToString(CultureInfo.InvariantCulture));
-        sb.AppendLine("Resumo,quantidadeMelhoriasDesbloqueadas," + dados.quantidadeMelhoriasDesbloqueadas.ToString(CultureInfo.InvariantCulture));
-        sb.AppendLine("Resumo,valorReferenciaDesbloqueio," + FormatarNumero(dados.valorReferenciaDesbloqueio));
-        sb.AppendLine("Resumo,maiorDinheiroAtingido," + FormatarNumero(dados.maiorDinheiroAtingido));
+        sb.AppendLine("Campo,Valor");
+        sb.AppendLine("dataUtc," + EscaparCsv(DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture)));
+        sb.AppendLine("dinheiroAtual," + FormatarNumero(dados.dinheiroAtual));
+        sb.AppendLine("totalComprasMelhorias," + dados.totalComprasMelhorias.ToString(CultureInfo.InvariantCulture));
+        sb.AppendLine("quantidadeMelhoriasDesbloqueadas," + dados.quantidadeMelhoriasDesbloqueadas.ToString(CultureInfo.InvariantCulture));
+        sb.AppendLine("valorReferenciaDesbloqueio," + FormatarNumero(dados.valorReferenciaDesbloqueio));
+        sb.AppendLine("maiorDinheiroAtingido," + FormatarNumero(dados.maiorDinheiroAtingido));
         sb.AppendLine();
         sb.AppendLine("Melhorias,indiceTabela,idMelhoria,categoria,quantidadeComprada,precoBase,precoAtual,multiplicadorPreco,percentualPorCompra,multiplicadorTotal");
 
@@ -372,4 +382,59 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             }
         }
     }
+    #endregion
+
+    #region Save online
+
+    public string supabaseUrl = "https://tjxqpqzvhplgdsujscmd.supabase.co";
+    public string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqeHFwcXp2aHBsZ2RzdWpzY21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMzY5MzIsImV4cCI6MjA4ODkxMjkzMn0.Wz_dqOn58HchufPd__B5ZKj1_QFZYtqf2IshFQ4j4Fo";
+
+    private DadosEconomiaJogo dadosEconomiaJogo;
+
+    [System.Serializable]
+    public class DadosRanking
+    {
+        public int id;
+        public string nome;
+        public float dinheiroMax;
+    }
+    public void InserirLinhaNoBanco(string nome, float dinheiroMax)
+    {
+        DadosEconomiaJogo dadosDoJogo = CapturarDadosEconomia();
+        DadosRanking dados = new DadosRanking();
+        dados.nome = "nome";
+        dados.dinheiroMax = dadosDoJogo.dinheiroAtual;
+
+        StartCoroutine(CriarLinhaNoBanco(dados));
+    }
+
+    public IEnumerator CriarLinhaNoBanco(DadosRanking dados)
+    {
+        string json = JsonUtility.ToJson(dados);
+
+        using (UnityWebRequest Requisicao = new UnityWebRequest(supabaseUrl, "POST"))
+        {
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+            Requisicao.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            Requisicao.downloadHandler = new DownloadHandlerBuffer();
+
+            Requisicao.SetRequestHeader("Content-Type", "application/json");
+            Requisicao.SetRequestHeader("apikey", supabaseKey);
+            Requisicao.SetRequestHeader("Autorization", "Bearer " + supabaseKey);
+
+            yield return Requisicao.SendWebRequest();
+
+            if (Requisicao.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Dados salvos");
+            }
+            else
+            {
+                Debug.Log("Erro ao salvar no banco: " + Requisicao.error);
+                Debug.Log("Detalhes do erro!" + Requisicao.downloadHandler.text);
+            }
+        }
+    }
+    #endregion
+
 }
