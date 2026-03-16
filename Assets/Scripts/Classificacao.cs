@@ -1,23 +1,58 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using static SaveManagerPlayerPrefs;
 
 public class Classificacao : MonoBehaviour
 {
-    public Transform clsssificacaoPreab;
+    [SerializeField] private TextMeshProUGUI textoDestino;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-     StartCoroutin( GameObject.Find("GameManager").transform.GetComponent<SaveManagerPlayerPrefs>().CarregarLinhaDoBanco(CarregarClassificacao) );
+        if (!isActiveAndEnabled)
+            return;
+
+        StartCoroutine(RotinaCarregarClassificacao());
     }
 
-    public void CarregarClassificacao(DadosRankingLista dados)
+    private IEnumerator RotinaCarregarClassificacao()
     {
-        foreach(DadosRankingFetch item in dados.items)
+        if (textoDestino == null)
+            textoDestino = GetComponentInChildren<TextMeshProUGUI>(true);
+
+        if (textoDestino == null)
+            yield break;
+
+        textoDestino.text = "Carregando ranking...";
+
+        List<BancoDeDados.DadosRankingFetch> itens = null;
+        yield return BancoDeDados.Instancia.CarregarTop5(resultado => itens = resultado);
+
+        if (itens == null || itens.Count == 0)
         {
-            Transform instaciado = Instantiate(clsssificacaoPreab, transform);
-            instaciado.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = item.Nome +" | "+ item.dinheiroMax;
-            //instaciado.GetComponent<ClassificacaoPrefab>().SetarDados(item.Nome, item.dinheiroMax, item.created_at);
+            textoDestino.text = "Sem pontuadores cadastrados.";
+            yield break;
         }
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        for (int i = 0; i < itens.Count; i++)
+        {
+            BancoDeDados.DadosRankingFetch item = itens[i];
+            if (item == null)
+                continue;
+
+            if (sb.Length > 0)
+                sb.AppendLine();
+
+            sb.Append(i + 1)
+              .Append(". ")
+              .Append(item.Nome)
+              .Append(" | ")
+              .Append(item.dinheiroMax.ToString("0.##"))
+              .Append(" | ")
+              .Append(BancoDeDados.FormatarDataRegistro(item.created_at));
+        }
+
+        textoDestino.text = sb.ToString();
     }
 }

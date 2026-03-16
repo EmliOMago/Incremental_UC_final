@@ -721,6 +721,7 @@ public class HUDManeger : MonoBehaviour
 
         float dinheiroAtual = GameDirector.instancia.levelManenger.dinheiro;
         _maiorDinheiroAtingido = Mathf.Max(_maiorDinheiroAtingido, dinheiroAtual);
+        BancoDeDados.dinheiroMax = _maiorDinheiroAtingido;
         bool houveDesbloqueio = false;
 
         while (_quantidadeDesbloqueadas < _melhorias.Count && _maiorDinheiroAtingido >= Mathf.Max(1f, _valorReferenciaDesbloqueio) * multiplicadorDesbloqueio)

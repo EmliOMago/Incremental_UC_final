@@ -5,15 +5,10 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
-using static UnityEditor.PlayerSettings;
 
 public class SaveManagerPlayerPrefs : MonoBehaviour
 {
-
-    #region save local
-
     private const string ChaveCriptografiaArquivos = "EmliOMago";
     private const string NomeArquivoJson = "estado_atual_jogo.json";
     private const string NomeArquivoCsv = "estado_atual_jogo.csv";
@@ -27,13 +22,23 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
     private bool _saveSujo = true;
     private string _ultimoJsonSalvo;
     private string _ultimoCsvSalvo;
+    private Coroutine _rotinaCarregamentoInicial;
+
     public bool CarregamentoInicialConcluido { get; private set; }
 
     private void Start()
     {
         if (SceneManager.GetActiveScene().name == "CenaJogo")
             SolicitarCarregamentoInicial();
+    }
 
+    private void OnDisable()
+    {
+        if (_rotinaCarregamentoInicial != null)
+        {
+            StopCoroutine(_rotinaCarregamentoInicial);
+            _rotinaCarregamentoInicial = null;
+        }
     }
 
     public void SolicitarCarregamentoInicial()
@@ -43,8 +48,11 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
 
         _carregamentoInicialSolicitado = true;
         CarregamentoInicialConcluido = false;
-        CarregarOuCriar();
-        CarregamentoInicialConcluido = true;
+
+        if (_rotinaCarregamentoInicial != null)
+            StopCoroutine(_rotinaCarregamentoInicial);
+
+        _rotinaCarregamentoInicial = StartCoroutine(RotinaCarregamentoInicial());
     }
 
     public float ObterIntervaloAutoSaveSegundos()
@@ -71,6 +79,7 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         if (dados == null)
             return;
 
+        BancoDeDados.dinheiroMax = ObterDinheiroMaxDoSave(dados);
         SalvarDadosNosArquivos(dados);
     }
 
@@ -81,26 +90,14 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             return;
 
         AplicarDadosAoJogo(dados);
-        ExportarArquivosEstadoAtual();
+        BancoDeDados.dinheiroMax = ObterDinheiroMaxDoSave(dados);
+        ExportarArquivosEstadoAtual(dados);
         _saveSujo = false;
     }
 
     public void CarregarOuCriar()
     {
-        CarregarLinhaDoBanco();
-
-        DadosEconomiaJogo dados = LerDadosDosArquivos();
-        if (dados == null)
-        {
-            dados = CriarEstadoZerado();
-            SalvarDadosNosArquivos(dados);
-        }
-
-        AplicarDadosAoJogo(dados);
-        ExportarArquivosEstadoAtual();
-
-        CarregarLinhaDoBanco();
-        _saveSujo = false;
+        StartCoroutine(RotinaCarregarOuCriar());
     }
 
     public void LimparSaveCompleto()
@@ -109,6 +106,7 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
 
         DadosEconomiaJogo dados = CriarEstadoZerado();
         AplicarDadosAoJogo(dados);
+        BancoDeDados.dinheiroMax = 0f;
         _saveSujo = true;
         SalvarDadosNosArquivos(dados);
     }
@@ -124,11 +122,87 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         if (dados == null)
             return;
 
+        BancoDeDados.dinheiroMax = ObterDinheiroMaxDoSave(dados);
         ExportarArquivosEstadoAtual(dados);
+    }
 
-        float dinheiro = dados.dinheiroAtual;
-        string nome = DadosJogador.NomeJogador;
-        InserirLinhaNoBanco(nome, dinheiro);
+    public IEnumerator SalvarEstadoAtualNoEncerramento(Action<bool> callback)
+    {
+        DadosEconomiaJogo dados = CapturarDadosEconomia();
+        if (dados == null)
+        {
+            callback?.Invoke(false);
+            yield break;
+        }
+
+        float dinheiroMaxAtual = ObterDinheiroMaxDoSave(dados);
+        BancoDeDados.dinheiroMax = dinheiroMaxAtual;
+        SalvarDadosNosArquivos(dados);
+
+        if (!BancoDeDados.PossuiNomeValido)
+        {
+            callback?.Invoke(true);
+            yield break;
+        }
+
+        bool sucesso = false;
+        yield return BancoDeDados.Instancia.SalvarOuAtualizarRegistroAtual(BancoDeDados.Nome, dinheiroMaxAtual, resultado => sucesso = resultado);
+        callback?.Invoke(sucesso);
+    }
+
+    private IEnumerator RotinaCarregamentoInicial()
+    {
+        yield return RotinaCarregarOuCriar();
+        CarregamentoInicialConcluido = true;
+        _rotinaCarregamentoInicial = null;
+    }
+
+    private IEnumerator RotinaCarregarOuCriar()
+    {
+        bool usarSaveLocalExistente = true;
+
+        if (!BancoDeDados.PossuiNomeValido)
+        {
+            usarSaveLocalExistente = false;
+        }
+        else
+        {
+            bool consultaSucesso = false;
+            bool nomeExisteNoBanco = false;
+            yield return BancoDeDados.Instancia.VerificarSeNomeExiste(BancoDeDados.Nome, (sucesso, existe) =>
+            {
+                consultaSucesso = sucesso;
+                nomeExisteNoBanco = existe;
+            });
+
+            if (consultaSucesso)
+            {
+                usarSaveLocalExistente = nomeExisteNoBanco;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManagerPlayerPrefs: não foi possível validar o nome no Supabase. O save local atual foi preservado para evitar perda de dados.");
+                usarSaveLocalExistente = true;
+            }
+        }
+
+        DadosEconomiaJogo dados = null;
+
+        if (usarSaveLocalExistente)
+            dados = LerDadosDosArquivos();
+        else
+            ExcluirArquivosEstadoAtual();
+
+        if (dados == null)
+        {
+            dados = CriarEstadoZerado();
+            SalvarDadosNosArquivos(dados);
+        }
+
+        AplicarDadosAoJogo(dados);
+        BancoDeDados.dinheiroMax = ObterDinheiroMaxDoSave(dados);
+        ExportarArquivosEstadoAtual(dados);
+        _saveSujo = false;
     }
 
     private void ExportarArquivosEstadoAtual(DadosEconomiaJogo dados)
@@ -201,6 +275,8 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         if (GameDirector.instancia != null && GameDirector.instancia.levelManenger != null)
             GameDirector.instancia.levelManenger.dinheiro = 0f;
 
+        BancoDeDados.dinheiroMax = 0f;
+
         return new DadosEconomiaJogo
         {
             dinheiroAtual = 0f,
@@ -237,7 +313,16 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         dados.dinheiroAtual = GameDirector.instancia != null && GameDirector.instancia.levelManenger != null
             ? GameDirector.instancia.levelManenger.dinheiro
             : 0f;
+        dados.maiorDinheiroAtingido = BancoDeDados.dinheiroMax;
         return dados;
+    }
+
+    private float ObterDinheiroMaxDoSave(DadosEconomiaJogo dados)
+    {
+        if (dados == null)
+            return Mathf.Max(0f, BancoDeDados.dinheiroMax);
+
+        return Mathf.Max(0f, dados.dinheiroAtual, dados.maiorDinheiroAtingido, BancoDeDados.dinheiroMax);
     }
 
     private static string ObterDiretorioDaAplicacao()
@@ -260,7 +345,6 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
         if (File.Exists(caminhoCsv))
             File.Delete(caminhoCsv);
     }
-
 
     private static string ConverterDadosParaCsv(DadosEconomiaJogo dados)
     {
@@ -388,106 +472,4 @@ public class SaveManagerPlayerPrefs : MonoBehaviour
             }
         }
     }
-    #endregion
-
-    #region Save online
-
-    string supabaseUrl = "https://tjxqpqzvhplgdsujscmd.supabase.co/rest/v1/Ranckin";
-    string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqeHFwcXp2aHBsZ2RzdWpzY21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMzY5MzIsImV4cCI6MjA4ODkxMjkzMn0.Wz_dqOn58HchufPd__B5ZKj1_QFZYtqf2IshFQ4j4Fo";
-    
-    #region Estruturas de dados para o ranking
-    private DadosEconomiaJogo dadosEconomiaJogo;
-
-    [Serializable]
-    public class DadosRanking
-    {
-        public string Nome;
-        public float dinheiroMax;
-    }
-
-    [Serializable]
-    public class DadosRankingFetch
-    {
-        public int id;
-        public string Nome;
-        public float dinheiroMax;
-        public string created_at;
-    }
-
-    [Serializable]
-    public class DadosRankingLista
-    {
-        public DadosRankingFetch[] items;
-    }
-    #endregion
-
-    public void InserirLinhaNoBanco(string nome, float dinheiroMax)
-    {
-        DadosEconomiaJogo dadosDoJogo = CapturarDadosEconomia();
-        
-        DadosRanking dados = new DadosRanking();
-        dados.Nome = nome;
-        dados.dinheiroMax = dinheiroMax;
-
-        StartCoroutine(CriarLinhaNoBanco(dados));
-    }
-
-    public IEnumerator CriarLinhaNoBanco(DadosRanking dados)
-    {
-        string json = JsonUtility.ToJson(dados);
-
-        using (UnityWebRequest Requisicao = new UnityWebRequest(supabaseUrl, "POST"))
-        {
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
-            Requisicao.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            Requisicao.downloadHandler = new DownloadHandlerBuffer();
-
-            Requisicao.SetRequestHeader("Content-Type", "application/json");
-            Requisicao.SetRequestHeader("apikey", supabaseKey);
-            Requisicao.SetRequestHeader("Authorization", "Bearer " + supabaseKey);
-
-            yield return Requisicao.SendWebRequest();
-
-            if (Requisicao.result == UnityWebRequest.Result.Success)
-            {
-                Debug.Log("Dados salvos");
-            }
-            else
-            {
-                Debug.Log("Erro ao salvar no banco: " + Requisicao.error);
-                Debug.Log("Detalhes do erro!" + Requisicao.downloadHandler.text);
-            }
-        }
-    }
-
-    public IEnumerator CarregarLinhaDoBanco(System.Action<DadosRankingLista> callback)
-    {
-        using (UnityWebRequest Requisicao = UnityWebRequest.Get(supabaseUrl))
-        {
-            Requisicao.SetRequestHeader("apikey", supabaseKey);
-            Requisicao.SetRequestHeader("Authorization", "Bearer " + supabaseKey);
-
-            yield return Requisicao.SendWebRequest();
-
-            if (Requisicao.result == UnityWebRequest.Result.Success)
-            {
-                Debug.Log("Dados carregados: " + Requisicao.downloadHandler.text);
-                string jsonResposta = "{\"items\":" + Requisicao.downloadHandler.text+"}";
-                DadosRankingLista dados = JsonUtility.FromJson<DadosRankingLista>(jsonResposta);
-
-                callback(dados);
-                /*foreach(DadosRankingFetch item in dados.items)
-                {
-                    Debug.Log("Nome: " + item.Nome + " - Dinheiro Max: " + item.dinheiroMax);
-                }*/
-            }
-            else
-            {
-                Debug.Log("Erro ao carregar do banco: " + Requisicao.error);
-                Debug.Log("Detalhes do erro!" + Requisicao.downloadHandler.text);
-            }
-        }
-    }
-        #endregion
-
 }
